@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "509723349571",
+    "project_id": "cbt-quiz-app",
+    "storage_bucket": "cbt-quiz-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509723349571:android:af9a13e145c5df64ddfaf6",
+        "android_client_info": {
+          "package_name": "com.company.cbt_quiz_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRfTm8LEPtw_KovGzldaok7dEAJwK3Mi0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509723349571:android:6fdee4b228a704d9ddfaf6",
+        "android_client_info": {
+          "package_name": "com.example.cbt_quiz_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRfTm8LEPtw_KovGzldaok7dEAJwK3Mi0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
