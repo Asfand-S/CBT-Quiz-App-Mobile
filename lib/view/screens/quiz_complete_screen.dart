@@ -27,6 +27,9 @@ class QuizCompleteScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Quiz Completed'),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -34,21 +37,62 @@ class QuizCompleteScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("🎉", style: TextStyle(fontSize: 60)),
-              const SizedBox(height: 16),
-              Text("You scored $score out of $total",
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              Text("Percentage: $percent%",
-                  style: const TextStyle(fontSize: 18)),
-              const SizedBox(height: 12),
-              Text("Time Taken: ${_formatDuration(timeTaken)}",
-                  style: const TextStyle(fontSize: 18)),
-              const SizedBox(height: 32),
+              const Text("🎉", style: TextStyle(fontSize: 80)),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "You scored $score out of $total",
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Percentage: $percent%",
+                      style:
+                          const TextStyle(fontSize: 18, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Time Taken: ${_formatDuration(timeTaken)}",
+                      style:
+                          const TextStyle(fontSize: 18, color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
               ElevatedButton.icon(
                 onPressed: () => NavigationService.pushReplacement('/home'),
-                icon: const Icon(Icons.home),
-                label: const Text("Back to Home"),
+                icon: const Icon(Icons.home, color: Colors.white),
+                label: const Text(
+                  "Back to Home",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 6,
+                ),
               )
             ],
           ),

@@ -43,7 +43,8 @@ class _QuizScreenState extends State<QuizScreen> {
       fetched = await qVM.fetchQuestionsForCategory(widget.category);
       fetched.shuffle();
     } else {
-      fetched = await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
+      fetched =
+          await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
     }
 
     setState(() {
@@ -72,6 +73,33 @@ class _QuizScreenState extends State<QuizScreen> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Quit Quiz'),
+          content: const Text('Are you sure you want to quit the quiz?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User doesn't want to quit
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User wants to quit
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+    return shouldPop ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_questions.isEmpty) {
@@ -82,32 +110,67 @@ class _QuizScreenState extends State<QuizScreen> {
 
     final q = _questions[_currentIndex];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.isMock
-            ? "Mock Quiz"
-            : "Practice - ${widget.topicName}"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text("Q${_currentIndex + 1}/${_questions.length}",
-                style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 10),
-            Text(q.question, style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 24),
-            ...List.generate(q.options.length, (i) {
-              return Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton(
-                  onPressed: () => _submitAnswer(i),
-                  child: Text(q.options[i]),
+    return WillPopScope(
+      onWillPop: _onWillPop, // Intercept the back button press
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+              widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}"),
+          backgroundColor: Colors.teal,
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Q${_currentIndex + 1}/${_questions.length}",
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey)),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              );
-            })
-          ],
+                child: Text(
+                  q.question,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ...List.generate(q.options.length, (i) {
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
+                    onPressed: () => _submitAnswer(i),
+                    child: Text(
+                      q.options[i],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              })
+            ],
+          ),
         ),
       ),
     );

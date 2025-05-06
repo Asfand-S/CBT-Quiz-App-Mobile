@@ -13,13 +13,25 @@ class PracticeTopicsScreen extends StatelessWidget {
     final topicVM = Provider.of<TopicViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Topics')),
+      appBar: AppBar(
+        title: Text('Topics'),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+        elevation: 0,
+      ),
       body: Builder(
         builder: (_) {
-          final topics = category == 'nursing' ? topicVM.nursingTopics : topicVM.midwiferyTopics;
+          final topics = category == 'nursing'
+              ? topicVM.nursingTopics
+              : topicVM.midwiferyTopics;
 
           if (topics.isEmpty) {
-            return Center(child: Text("No topics added yet."));
+            return Center(
+              child: Text(
+                "No topics added yet.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
           }
 
           return GridView.count(
@@ -28,8 +40,13 @@ class PracticeTopicsScreen extends StatelessWidget {
             childAspectRatio: 3,
             children: topics.map((topic) {
               return Card(
-                child: ListTile(
-                  title: Text(topic.name),
+                elevation: 6,
+                margin: EdgeInsets.all(8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
                   onTap: () {
                     // Navigate to quiz for this topic
                     NavigationService.navigateTo(
@@ -42,6 +59,28 @@ class PracticeTopicsScreen extends StatelessWidget {
                       },
                     );
                   },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [Colors.teal.shade300, Colors.teal.shade700],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        topic.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
                 ),
               );
             }).toList(),

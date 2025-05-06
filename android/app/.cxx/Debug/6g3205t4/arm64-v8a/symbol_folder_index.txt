@@ -1,0 +1,1 @@
+D:\SmitE\firstapp\CBT-Quiz-App-Mobile\build\app\intermediates\cxx\Debug\6g3205t4\obj\arm64-v8a

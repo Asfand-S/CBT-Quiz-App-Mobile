@@ -9,15 +9,47 @@ class QuizTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$category Quiz')),
+      backgroundColor: Colors.green.shade50,
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          '$category Quiz',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
+        backgroundColor: Colors.green.shade700,
+        centerTitle: true,
+        elevation: 4,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Icon(
+              Icons.quiz_rounded,
+              size: 80,
+              color: Colors.green,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Choose Your Mode',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.green.shade700,
+              ),
+            ),
+            const SizedBox(height: 40),
             ElevatedButton.icon(
-              icon: Icon(Icons.menu_book),
-              label: Text('Practice Quiz'),
+              icon: const Icon(Icons.menu_book, color: Colors.white),
+              label: const Text(
+                'Practice Quiz',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
               onPressed: () {
                 NavigationService.navigateTo(
                   '/topics',
@@ -25,15 +57,24 @@ class QuizTypeScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 60),
+                minimumSize: const Size(double.infinity, 60),
+                backgroundColor: Colors.green.shade700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                shadowColor: Colors.green.shade800,
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              icon: Icon(Icons.shuffle),
-              label: Text('Mock Quiz'),
+              icon: const Icon(Icons.shuffle, color: Colors.white),
+              label: const Text(
+                'Mock Quiz',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
               onPressed: () {
-                // Navigate to QuizScreen
                 NavigationService.navigateTo(
                   '/quiz',
                   arguments: {
@@ -43,7 +84,14 @@ class QuizTypeScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 60),
+                minimumSize: const Size(double.infinity, 60),
+                backgroundColor: Colors.green.shade500,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                shadowColor: Colors.green.shade600,
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
           ],
