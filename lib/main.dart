@@ -8,6 +8,8 @@ import 'view_model/topic_viewmodel.dart';
 import 'firebase_options.dart';
 import 'utils/routes.dart';
 
+
+ late Size mq;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.blue),
         navigatorKey: NavigationService.navigatorKey,
-        initialRoute: '/',
+        initialRoute: '/login',
         onGenerateRoute: onGenerateRoute
       )
     );

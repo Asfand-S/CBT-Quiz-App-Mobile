@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Provider.of<TopicViewModel>(context, listen: false).fetchTopics();
     Future.delayed(Duration(seconds: 2), () {
-      NavigationService.pushReplacement('/home');
+      NavigationService.pushReplacement('/login');
     });
   }
 
@@ -24,7 +24,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("QUIZ APP", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+        child: Text("QUIZ APP",
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
       ),
     );
   }

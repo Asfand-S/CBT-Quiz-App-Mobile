@@ -1,3 +1,4 @@
+import 'package:cbt_quiz_android/authentication/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../view/screens/splash_screen.dart';
 import '../view/screens/home_screen.dart';
@@ -13,6 +14,9 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
 
     case '/home':
       return MaterialPageRoute(builder: (_) => HomeScreen());
+
+    case '/login':
+      return MaterialPageRoute(builder: (_) => LoginPage());
 
     case '/quizType':
       final args = settings.arguments as String; // category
