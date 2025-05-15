@@ -7,31 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:509723349571:android:af9a13e145c5df64ddfaf6",
-        "android_client_info": {
-          "package_name": "com.company.cbt_quiz_android"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCRfTm8LEPtw_KovGzldaok7dEAJwK3Mi0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:509723349571:android:6fdee4b228a704d9ddfaf6",
         "android_client_info": {
           "package_name": "com.example.cbt_quiz_android"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "509723349571-vuhjh0jskk6vir7bccl9attsq3g1fplq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cbt_quiz_android",
+            "certificate_hash": "743eec15e1bd354970a330f0366ef99cc7d732c6"
+          }
+        },
+        {
+          "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCRfTm8LEPtw_KovGzldaok7dEAJwK3Mi0"
@@ -39,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
