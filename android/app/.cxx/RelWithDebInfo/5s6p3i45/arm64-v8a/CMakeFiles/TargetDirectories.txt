@@ -1,0 +1,2 @@
+D:/SmitE/firstapp/CBT-Quiz-App-Mobile/android/app/.cxx/RelWithDebInfo/5s6p3i45/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/SmitE/firstapp/CBT-Quiz-App-Mobile/android/app/.cxx/RelWithDebInfo/5s6p3i45/arm64-v8a/CMakeFiles/rebuild_cache.dir

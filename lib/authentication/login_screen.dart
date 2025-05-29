@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:cbt_quiz_android/main.dart';
 import 'package:cbt_quiz_android/utils/Dialogs/dialog.dart';
-import 'package:cbt_quiz_android/utils/apis/apis.dart';
 import 'package:cbt_quiz_android/view/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +21,13 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         Navigator.pop(context);
         print(user.additionalUserInfo.toString());
-        if (await Apis.userExist()) {
+        if (await FirebaseService.userExist()) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
-          Apis.createUser().then(
+          FirebaseService.createUser().then(
             (onValue) => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HomeScreen()),

@@ -1,3 +1,4 @@
+import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import '../../data/services/navigation_service.dart';
 
@@ -15,6 +16,14 @@ class HomeScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await FirebaseService.userSignOut();
+                NavigationService.navigateTo('/login');
+              },
+              icon: Icon(Icons.logout))
+        ],
       ),
       body: GridView.count(
         padding: const EdgeInsets.all(16),

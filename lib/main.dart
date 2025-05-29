@@ -8,8 +8,7 @@ import 'view_model/topic_viewmodel.dart';
 import 'firebase_options.dart';
 import 'utils/routes.dart';
 
-
- late Size mq;
+late Size mq;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -23,19 +22,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TopicViewModel()),
-        ChangeNotifierProvider(create: (_) => QuizViewModel()),
-        ChangeNotifierProvider(create: (_) => QuestionViewModel()),
-      ],
-      child: MaterialApp(
-        title: 'Quiz App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(primarySwatch: Colors.blue),
-        navigatorKey: NavigationService.navigatorKey,
-        initialRoute: '/login',
-        onGenerateRoute: onGenerateRoute
-      )
-    );
+        providers: [
+          ChangeNotifierProvider(create: (_) => TopicViewModel()),
+          ChangeNotifierProvider(create: (_) => QuizViewModel()),
+          ChangeNotifierProvider(create: (_) => QuestionViewModel()),
+        ],
+        child: MaterialApp(
+            title: 'Quiz App',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(primarySwatch: Colors.blue),
+            navigatorKey: NavigationService.navigatorKey,
+            initialRoute: '/',
+            onGenerateRoute: onGenerateRoute));
   }
 }
