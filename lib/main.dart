@@ -7,6 +7,7 @@ import 'view_model/question_viewmodel.dart';
 import 'view_model/topic_viewmodel.dart';
 import 'firebase_options.dart';
 import 'utils/routes.dart';
+import 'view_model/useview_model.dart';
 
 late Size mq;
 void main() async {
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => TopicViewModel()),
           ChangeNotifierProvider(create: (_) => QuizViewModel()),
           ChangeNotifierProvider(create: (_) => QuestionViewModel()),
+          ChangeNotifierProvider(create: (_) => UserViewModel()),
         ],
         child: MaterialApp(
             title: 'Quiz App',

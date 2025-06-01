@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/models/question.dart';
 import '../../data/services/navigation_service.dart';
 import '../../view_model/question_viewmodel.dart';
+import '../../view_model/useview_model.dart';
 
 class QuizScreen extends StatefulWidget {
   final String category;
@@ -100,6 +101,11 @@ class _QuizScreenState extends State<QuizScreen> {
     return shouldPop ?? false;
   }
 
+  Future<void> _bookmarkQuestion() async {
+    final userVM = Provider.of<UserViewModel>(context, listen: false);
+    await userVM.addBookmark(_questions[_currentIndex].id);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_questions.isEmpty) {
@@ -119,6 +125,14 @@ class _QuizScreenState extends State<QuizScreen> {
           backgroundColor: Colors.teal,
           centerTitle: true,
           elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.bookmark),
+              onPressed: () async {
+                await _bookmarkQuestion();
+              },
+            )
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

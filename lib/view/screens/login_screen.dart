@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../data/services/navigation_service.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -75,7 +77,10 @@ class _LoginPageState extends State<LoginPage> {
             width: mq.width * .5,
 
             // child: Image.asset("assets/images/chat.png"),
-            child: Icon(Icons.home),
+            child: InkWell(
+              child: Icon(Icons.home),
+              onTap: () => NavigationService.pushReplacement('/home'),
+            ),
           ),
           Positioned(
             top: mq.height * .7,

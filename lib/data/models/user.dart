@@ -8,6 +8,8 @@ class UserModel {
   final String id;
   final String email;
   final String? pushToken;
+  final bool isPremium;
+  final List<dynamic> bookmarks;
 
   UserModel({
     required this.image,
@@ -18,11 +20,13 @@ class UserModel {
     required this.lastActive,
     required this.id,
     required this.email,
+    required this.isPremium,
+    required this.bookmarks,
     this.pushToken,
   });
 
   // Factory method to create an instance from a JSON map
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromMap(Map<String, dynamic> json) {
     return UserModel(
       image: json['image'] as String,
       name: json['name'] as String,
@@ -33,11 +37,13 @@ class UserModel {
       id: json['id'] as String,
       email: json['email'] as String,
       pushToken: json['push_token'] as String?, // Nullable string
+      isPremium: json['is_premium'] as bool,
+      bookmarks: json['bookmarks'],
     );
   }
 
   // Method to convert an instance to JSON map
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'image': image,
       'name': name,
@@ -48,6 +54,8 @@ class UserModel {
       'id': id,
       'email': email,
       'push_token': pushToken, // Nullable string
+      'is_premium': isPremium,
+      'bookmarks': bookmarks
     };
   }
 }
