@@ -1,4 +1,5 @@
 import 'package:cbt_quiz_android/data/services/firebase_service.dart';
+import 'package:cbt_quiz_android/view/screens/bookmark_questions.dart';
 import 'package:flutter/material.dart';
 import '../../data/services/navigation_service.dart';
 
@@ -65,6 +66,20 @@ class HomeScreen extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+      bottomNavigationBar: Row(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BookmarkedQuestionsPage(
+                              category: 'nursing',
+                            )));
+              },
+              child: Text("bookmark"))
+        ],
       ),
     );
   }
