@@ -30,9 +30,13 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => UserViewModel()),
         ],
         child: MaterialApp(
+            theme: ThemeData(
+                appBarTheme: AppBarTheme(
+                    titleTextStyle:
+                        TextStyle(color: Colors.white, fontSize: 24),
+                    iconTheme: IconThemeData(color: Colors.white))),
             title: 'Quiz App',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(primarySwatch: Colors.blue),
             navigatorKey: NavigationService.navigatorKey,
             initialRoute: '/',
             onGenerateRoute: onGenerateRoute));

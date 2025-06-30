@@ -121,13 +121,18 @@ class _QuizScreenState extends State<QuizScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-              widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}"),
+            widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.teal,
           centerTitle: true,
           elevation: 0,
           actions: [
             IconButton(
-              icon: const Icon(Icons.bookmark),
+              icon: const Icon(
+                Icons.bookmark,
+                color: Colors.white,
+              ),
               onPressed: () async {
                 await _bookmarkQuestion();
               },

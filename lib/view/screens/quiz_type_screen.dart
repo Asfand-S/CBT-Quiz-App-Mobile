@@ -8,6 +8,7 @@ class QuizTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String name = category[0].toUpperCase() + category.substring(1);
     return Scaffold(
       backgroundColor: Colors.green.shade50,
       appBar: AppBar(
@@ -85,12 +86,62 @@ class QuizTypeScreen extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 60),
-                backgroundColor: Colors.green.shade500,
+                backgroundColor: Colors.green.shade700,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 8,
                 shadowColor: Colors.green.shade600,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+            SizedBox(height: 24),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.bookmark, color: Colors.white),
+              label: const Text(
+                'Bookmarks',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              onPressed: () {
+                // NavigationService.navigateTo(
+                //   '/bookmarks',
+                //   arguments: category,
+                // );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 60),
+                backgroundColor: Colors.green.shade700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                shadowColor: Colors.green.shade800,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.workspace_premium, color: Colors.white),
+              label: const Text(
+                'Get Premium',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              onPressed: () {
+                NavigationService.navigateTo(
+                  '/login',
+                  arguments: category,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 60),
+                backgroundColor: Colors.green.shade700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                shadowColor: Colors.green.shade800,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),

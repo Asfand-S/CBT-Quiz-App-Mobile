@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     } else {
       await Future.delayed(Duration(seconds: 2), () {
-        NavigationService.pushReplacement('/login');
+        NavigationService.pushReplacement('/home');
       });
     }
   }

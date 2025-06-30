@@ -1,3 +1,5 @@
+import 'package:cbt_quiz_android/PaymentGateway/payment_page.dart';
+import 'package:cbt_quiz_android/view/screens/bookmark_questions.dart';
 import 'package:cbt_quiz_android/view/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../view/screens/splash_screen.dart';
@@ -11,12 +13,17 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
     case '/':
       return MaterialPageRoute(builder: (_) => SplashScreen());
-
     case '/home':
       return MaterialPageRoute(builder: (_) => HomeScreen());
-
+    case '/premium':
+      return MaterialPageRoute(builder: (_) => PremiumScreen());
     case '/login':
       return MaterialPageRoute(builder: (_) => LoginPage());
+
+    case '/bookmarks':
+      final args = settings.arguments as String;
+      return MaterialPageRoute(
+          builder: (_) => BookmarkedQuestionsPage(category: args));
 
     case '/quizType':
       final args = settings.arguments as String; // category

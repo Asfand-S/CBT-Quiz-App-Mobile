@@ -1,6 +1,7 @@
 import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import '../models/question.dart';
 import '../models/topic.dart';
 
@@ -33,12 +34,10 @@ class FirebaseService {
       name: currentUser.displayName ?? '',
       about: "Hey I am using Happy Chat",
       createdAt: time,
-      isOnline: false,
       lastActive: time,
       id: currentUser.uid,
       email: currentUser.email ?? '',
       isPremium: false,
-      pushToken: "",
       bookmarks: [],
     );
     return await firestore
@@ -65,6 +64,19 @@ class FirebaseService {
       print('Error fetching user profile: $e');
       return null;
     }
+  }
+
+  Future<void> setPremium() async {
+    final currentUser = auth.currentUser;
+    if (currentUser == null) {
+      const SnackBar(content: Text("ser does not exist"));
+      return;
+    }
+
+    return await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({'isPremium': true});
   }
 
   Future<void> updateUserBookmarks(

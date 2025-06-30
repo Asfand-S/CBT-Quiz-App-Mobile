@@ -7,20 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:509723349571:android:6fdee4b228a704d9ddfaf6",
+        "mobilesdk_app_id": "1:509723349571:android:0c8bec5e48361e26ddfaf6",
         "android_client_info": {
-          "package_name": "com.example.cbt_quiz_android"
+          "package_name": "com.cbt.quizapp"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "509723349571-vuhjh0jskk6vir7bccl9attsq3g1fplq.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.cbt_quiz_android",
-            "certificate_hash": "743eec15e1bd354970a330f0366ef99cc7d732c6"
-          }
-        },
         {
           "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
           "client_type": 3
