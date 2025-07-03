@@ -27,9 +27,6 @@ class QuizCompleteScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Quiz Completed'),
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.teal,
-        centerTitle: true,
-        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),

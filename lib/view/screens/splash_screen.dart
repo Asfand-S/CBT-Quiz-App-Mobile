@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/services/navigation_service.dart';
 import '../../view_model/topic_viewmodel.dart';
-import '../../view_model/useview_model.dart';
+import '../../view_model/user_viewmodel.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,8 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    Provider.of<UserViewModel>(context, listen: false).init();
     Provider.of<TopicViewModel>(context, listen: false).fetchTopics();
-    Provider.of<UserViewModel>(context, listen: false).loadUser();
     userCheck();
   }
 

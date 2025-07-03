@@ -15,9 +15,6 @@ class PracticeTopicsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Topics'),
-        backgroundColor: Colors.teal,
-        centerTitle: true,
-        elevation: 0,
       ),
       body: Builder(
         builder: (_) {

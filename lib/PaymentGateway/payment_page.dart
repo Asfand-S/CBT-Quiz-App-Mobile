@@ -72,9 +72,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
           const SnackBar(content: Text("Purchase failed")),
         );
       } else {
-        const SnackBar(content: Text("Purchase Succeed"));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Purchase Succeed"))
+        );
         _firebaseService.setPremium();
-        const SnackBar(content: Text("Firebase updated"));
       }
     }
   }

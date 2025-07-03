@@ -18,20 +18,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   void googleSignInButton() async {
     Dialogs.showProgressBar(context);
-    print(1);
     signInWithGoogle().then((user) async {
-      print(2);
       if (user != null) {
-        print(3);
         Navigator.pop(context);
-        print(user.additionalUserInfo.toString());
         if (await FirebaseService.userExist()) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
-          print("4");
           FirebaseService.createUser().then(
             (onValue) => Navigator.push(
               context,
@@ -42,8 +37,6 @@ class _LoginPageState extends State<LoginPage> {
             '/premium',
           );
         }
-      } else {
-        print("X");
       }
     });
   }

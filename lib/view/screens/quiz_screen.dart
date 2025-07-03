@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/question.dart';
 import '../../data/services/navigation_service.dart';
+import '../../utils/Dialogs/dialog.dart';
 import '../../view_model/question_viewmodel.dart';
-import '../../view_model/useview_model.dart';
+import '../../view_model/user_viewmodel.dart';
 
 class QuizScreen extends StatefulWidget {
   final String category;
@@ -25,6 +26,7 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   List<Question> _questions = [];
+  bool _noQuestions = false;
   int _currentIndex = 0;
   int _score = 0;
   late DateTime _startTime;
@@ -38,18 +40,18 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _loadQuestions() async {
     final qVM = Provider.of<QuestionViewModel>(context, listen: false);
+
     List<Question> fetched;
 
     if (widget.isMock) {
       fetched = await qVM.fetchQuestionsForCategory(widget.category);
-      fetched.shuffle();
     } else {
-      fetched =
-          await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
+      fetched = await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
     }
 
     setState(() {
       _questions = fetched;
+      _noQuestions = fetched.isEmpty;
     });
   }
 
@@ -103,13 +105,31 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _bookmarkQuestion() async {
     final userVM = Provider.of<UserViewModel>(context, listen: false);
-    await userVM.addBookmark(_questions[_currentIndex].id);
+    final String message = await userVM.addBookmark(_questions[_currentIndex].id);
+
+    Dialogs.snackBar(context, message);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_noQuestions) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",),
+        ),
+        body: Center(
+                child: Text(
+                  "No questions added yet.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              )
+      );
+    }
     if (_questions.isEmpty) {
-      return const Scaffold(
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",),
+        ),
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -122,11 +142,7 @@ class _QuizScreenState extends State<QuizScreen> {
         appBar: AppBar(
           title: Text(
             widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
-            style: TextStyle(color: Colors.white),
           ),
-          backgroundColor: Colors.teal,
-          centerTitle: true,
-          elevation: 0,
           actions: [
             IconButton(
               icon: const Icon(

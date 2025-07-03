@@ -1,7 +1,7 @@
 import 'package:cbt_quiz_android/data/models/question.dart';
-import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookmarkedQuestionsPage extends StatefulWidget {
   final String category;
@@ -23,15 +23,18 @@ class _BookmarkedQuestionsPageState extends State<BookmarkedQuestionsPage> {
   }
 
   Future<List<Question>> _loadBookmarkedQuestions() async {
-    // Step 1: Get current user profile
-    UserModel? user = await FirebaseService().getCurrentUserProfile();
+    // // Step 1: Get current user profile
+    // UserModel? user = await FirebaseService().getCurrentUserProfile();
 
-    if (user == null || user.bookmarks.isEmpty) return [];
+    // if (user == null || user.bookmarks.isEmpty) return [];
+
+    final prefs = await SharedPreferences.getInstance();
+    List<String> bookmarks = prefs.getStringList('bookmarks') ?? [];
 
     // Step 2: Fetch only bookmarked questions
     List<Question?> questions = await FirebaseService()
-        .getAllBookmarkedQuestionsForCategory(
-            widget.category, List<String>.from(user.bookmarks));
+        .getBookmarkedQuestions(
+            widget.category, List<String>.from(bookmarks));
 
     // Filter out nulls
     return questions.whereType<Question>().toList();

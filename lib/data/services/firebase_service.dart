@@ -86,6 +86,8 @@ class FirebaseService {
     });
   }
 
+
+
   Future<List<Question?>> getBookmarkedQuestions(
       String category, List<dynamic> bookmarks) async {
     if (bookmarks.isEmpty) return [];
@@ -125,7 +127,7 @@ class FirebaseService {
         .toList();
   }
 
-  Future<List<Question>> getQuestions(String category, String topicId) async {
+  Future<List<Question>> getQuestionsForTopic(String category, String topicId, bool isPaid) async {
     final snapshot = await firestore
         .collection('categories')
         .doc(category)
@@ -134,12 +136,21 @@ class FirebaseService {
         .collection('questions')
         .get();
 
-    return snapshot.docs
+    final questions = snapshot.docs
         .map((doc) => Question.fromMap(doc.id, doc.data()))
         .toList();
+
+    if (isPaid) {
+      questions.shuffle();
+      return questions;
+    }
+    else {
+      if (questions.length < 4) return questions;
+      return questions.sublist(0, 4);
+    }
   }
 
-  Future<List<Question>> getAllQuestionsForCategory(String category) async {
+  Future<List<Question>> getAllQuestionsForCategory(String category, bool isPaid) async {
     final topicsSnapshot = await firestore
         .collection('categories')
         .doc(category)
@@ -152,34 +163,13 @@ class FirebaseService {
       final questionsSnapshot =
           await topicDoc.reference.collection('questions').get();
 
-      final questions = questionsSnapshot.docs.map((doc) {
+      var questions = questionsSnapshot.docs.map((doc) {
         return Question.fromMap(doc.id, doc.data());
       }).toList();
 
-      allQuestions.addAll(questions);
-    }
-
-    return allQuestions;
-  }
-
-  Future<List<Question?>> getAllBookmarkedQuestionsForCategory(
-      String category, List<String> bookmarks) async {
-    final topicsSnapshot = await firestore
-        .collection('categories')
-        .doc(category)
-        .collection('topics')
-        .get();
-
-    List<Question?> allQuestions = [];
-
-    for (final topicDoc in topicsSnapshot.docs) {
-      final questionsSnapshot =
-          await topicDoc.reference.collection('questions').get();
-
-      final questions = questionsSnapshot.docs.map((doc) {
-        if (!bookmarks.contains(doc.id)) return null;
-        return Question.fromMap(doc.id, doc.data());
-      }).toList();
+      if (!isPaid && questions.length > 4) {
+        questions = questions.sublist(0, 4);
+      }
 
       allQuestions.addAll(questions);
     }
