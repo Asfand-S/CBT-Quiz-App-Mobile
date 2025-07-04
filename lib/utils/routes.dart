@@ -17,8 +17,8 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => HomeScreen());
     case '/premium':
       return MaterialPageRoute(builder: (_) => PremiumScreen());
-    case '/login':
-      return MaterialPageRoute(builder: (_) => LoginPage());
+    // case '/login':
+    //   return MaterialPageRoute(builder: (_) => LoginPage());
 
     case '/bookmarks':
       final args = settings.arguments as String;

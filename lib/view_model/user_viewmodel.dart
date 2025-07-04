@@ -19,7 +19,7 @@ class UserViewModel extends ChangeNotifier {
   int _lastActive = 0;
   int get lastActive => _lastActive;
 
-  UserModel? _currentUser = null;
+  late final UserModel? _currentUser;
   UserModel? get currentUser => _currentUser;
 
   Future<void> init() async {
@@ -47,7 +47,7 @@ class UserViewModel extends ChangeNotifier {
 
   Future<void> getValuesFromSharedPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isPaid', true);
+    await prefs.setBool('isPaid', false);
 
     // If 'isPaid' doesn't exist, set it to false
     if (!prefs.containsKey('isPaid')) {
@@ -76,19 +76,15 @@ class UserViewModel extends ChangeNotifier {
     return _isPaid || isConnected;
   }
 
-
-
   Future<String> addBookmark(String questionId) async {
     final prefs = await SharedPreferences.getInstance();
     List<String> bookmarks = prefs.getStringList('bookmarks') ?? [];
 
     if (bookmarks.contains(questionId)) {
       return "Question already bookmarked.";
-    }
-    else if (!isPaid && bookmarks.length >= 5) {
+    } else if (!isPaid && bookmarks.length >= 5) {
       return "You can only bookmark 5 questions.";
-    }
-    else {
+    } else {
       bookmarks.add(questionId);
       await prefs.setStringList("bookmarks", bookmarks);
       // await _firebaseService.updateUserBookmarks(
