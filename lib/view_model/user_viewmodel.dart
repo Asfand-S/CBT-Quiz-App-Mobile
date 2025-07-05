@@ -95,11 +95,11 @@ class UserViewModel extends ChangeNotifier {
   }
 
   Future<List<Question?>> getBookmarkedQuestions(String category) async {
-    if (_currentUser == null || _currentUser?.bookmarks == null) {
+    if (_currentUser == null || _currentUser.bookmarks == null) {
       return [];
     } else {
       return await _firebaseService.getBookmarkedQuestions(
-          category, _currentUser!.bookmarks);
+          category, _currentUser.bookmarks);
     }
   }
 }

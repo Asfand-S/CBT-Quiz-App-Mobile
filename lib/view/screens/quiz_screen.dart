@@ -24,12 +24,19 @@ class QuizScreen extends StatefulWidget {
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
+int i = 0;
+String category = category;
+
 class _QuizScreenState extends State<QuizScreen> {
   List<Question> _questions = [];
   bool _noQuestions = false;
   int _currentIndex = 0;
   int _score = 0;
+  bool isPracticeCategory = false;
   late DateTime _startTime;
+  Color color = Colors.teal.shade700;
+  final String explaination =
+      "This is a dummy paragraph where the explaination will be showed only for the practice session have to check category then I have to print out the explaination";
 
   @override
   void initState() {
@@ -46,7 +53,8 @@ class _QuizScreenState extends State<QuizScreen> {
     if (widget.isMock) {
       fetched = await qVM.fetchQuestionsForCategory(widget.category);
     } else {
-      fetched = await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
+      fetched =
+          await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
     }
 
     setState(() {
@@ -56,6 +64,31 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _submitAnswer(int selectedIndex) {
+    final current = _questions[_currentIndex];
+    if (selectedIndex == current.correctIndex) _score++;
+    setState(() {
+      color = Colors.green.shade700;
+      explaination;
+    });
+
+    if (_currentIndex < _questions.length - 1) {
+      // setState(() => _currentIndex++);
+    } else {
+      final duration = DateTime.now().difference(_startTime);
+
+      // Navigate to completion and clear backstack
+      NavigationService.navigateTo(
+        '/complete',
+        arguments: {
+          'score': _score,
+          'total': _questions.length,
+          'timeTaken': duration,
+        },
+      );
+    }
+  }
+
+  void _nextQuestion(int selectedIndex) {
     final current = _questions[_currentIndex];
     if (selectedIndex == current.correctIndex) _score++;
 
@@ -105,7 +138,8 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _bookmarkQuestion() async {
     final userVM = Provider.of<UserViewModel>(context, listen: false);
-    final String message = await userVM.addBookmark(_questions[_currentIndex].id);
+    final String message =
+        await userVM.addBookmark(_questions[_currentIndex].id);
 
     Dialogs.snackBar(context, message);
   }
@@ -114,21 +148,24 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     if (_noQuestions) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",),
-        ),
-        body: Center(
-                child: Text(
-                  "No questions added yet.",
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              )
-      );
+          appBar: AppBar(
+            title: Text(
+              widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+            ),
+          ),
+          body: Center(
+            child: Text(
+              "No questions added yet.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ));
     }
     if (_questions.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",),
+          title: Text(
+            widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+          ),
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -174,8 +211,8 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
                 child: Text(
                   q.question,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600, color: color),
                 ),
               ),
               const SizedBox(height: 24),
@@ -203,9 +240,45 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                   ),
                 );
-              })
+              }),
+              SizedBox(height: 10),
+              Text("Explaination",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              SizedBox(height: 10),
+              Text(explaination, style: TextStyle(fontSize: 18)),
             ],
           ),
+        ),
+        bottomNavigationBar: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 25),
+              child: ElevatedButton(
+                onPressed: () => _nextQuestion(i),
+                style: ElevatedButton.styleFrom(
+                  minimumSize:
+                      const Size(150, 30), // Larger size (width, height)
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 15), // Extra padding
+                  backgroundColor:
+                      Colors.blueAccent, // Vibrant background color
+                  foregroundColor: Colors.white, // Text/icon color
+                  textStyle: const TextStyle(
+                    fontSize: 18, // Larger text
+                    fontWeight: FontWeight.bold, // Bold text
+                  ),
+                  elevation: 8, // Shadow for depth
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                  shadowColor:
+                      Colors.blue.withOpacity(0.4), // Subtle shadow color
+                ),
+                child: const Text("Next"),
+              ),
+            )
+          ],
         ),
       ),
     );
