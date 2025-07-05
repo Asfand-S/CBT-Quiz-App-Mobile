@@ -24,17 +24,13 @@ class QuizScreen extends StatefulWidget {
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
-int i = 0;
-String category = category;
-
 class _QuizScreenState extends State<QuizScreen> {
   List<Question> _questions = [];
   bool _noQuestions = false;
   int _currentIndex = 0;
   int _score = 0;
-  bool isPracticeCategory = false;
+  int? _selectedIndex; // Track the selected answer
   late DateTime _startTime;
-  Color color = Colors.teal.shade700;
   final String explaination =
       "This is a dummy paragraph where the explaination will be showed only for the practice session have to check category then I have to print out the explaination";
 
@@ -64,36 +60,30 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _submitAnswer(int selectedIndex) {
-    final current = _questions[_currentIndex];
-    if (selectedIndex == current.correctIndex) _score++;
     setState(() {
-      color = Colors.green.shade700;
-      explaination;
+      _selectedIndex = selectedIndex; // Store the selected index
     });
 
-    if (_currentIndex < _questions.length - 1) {
-      // setState(() => _currentIndex++);
-    } else {
-      final duration = DateTime.now().difference(_startTime);
+    final current = _questions[_currentIndex];
+    if (selectedIndex == current.correctIndex) {
+      _score++;
+    }
 
-      // Navigate to completion and clear backstack
-      NavigationService.navigateTo(
-        '/complete',
-        arguments: {
-          'score': _score,
-          'total': _questions.length,
-          'timeTaken': duration,
-        },
-      );
+    if (widget.isMock) {
+      // For mock mode, proceed to next question immediately
+      _nextQuestion();
+    } else {
+      // For practice mode, show explanation and wait for user to press Next
+      setState(() {});
     }
   }
 
-  void _nextQuestion(int selectedIndex) {
-    final current = _questions[_currentIndex];
-    if (selectedIndex == current.correctIndex) _score++;
-
+  void _nextQuestion() {
     if (_currentIndex < _questions.length - 1) {
-      setState(() => _currentIndex++);
+      setState(() {
+        _currentIndex++;
+        _selectedIndex = null; // Reset selected index for the next question
+      });
     } else {
       final duration = DateTime.now().difference(_startTime);
 
@@ -174,7 +164,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final q = _questions[_currentIndex];
 
     return WillPopScope(
-      onWillPop: _onWillPop, // Intercept the back button press
+      onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -212,24 +202,39 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: Text(
                   q.question,
                   style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w600, color: color),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.teal.shade700),
                 ),
               ),
               const SizedBox(height: 24),
               ...List.generate(q.options.length, (i) {
+                Color buttonColor = Colors.teal; // Default color
+                if (_selectedIndex != null && !widget.isMock) {
+                  if (i == q.correctIndex) {
+                    buttonColor = Colors.green.shade700; // Correct answer
+                  } else if (i == _selectedIndex && i != q.correctIndex) {
+                    buttonColor = Colors.red.shade700; // Incorrect answer
+                  }
+                }
+
                 return Container(
                   width: double.infinity,
                   margin: const EdgeInsets.only(bottom: 10),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: Colors.teal,
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor:
+                          buttonColor, // Maintain color when disabled
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 4,
                     ),
-                    onPressed: () => _submitAnswer(i),
+                    onPressed: _selectedIndex == null
+                        ? () => _submitAnswer(i)
+                        : null, // Disable button after selection
                     child: Text(
                       q.options[i],
                       style: const TextStyle(
@@ -241,45 +246,47 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 10),
-              Text("Explaination",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              SizedBox(height: 10),
-              Text(explaination, style: TextStyle(fontSize: 18)),
+              if (!widget.isMock && _selectedIndex != null) ...[
+                SizedBox(height: 10),
+                Text("Explanation",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                SizedBox(height: 10),
+                Text(explaination, style: TextStyle(fontSize: 18)),
+              ],
             ],
           ),
         ),
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 25),
-              child: ElevatedButton(
-                onPressed: () => _nextQuestion(i),
-                style: ElevatedButton.styleFrom(
-                  minimumSize:
-                      const Size(150, 30), // Larger size (width, height)
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 15), // Extra padding
-                  backgroundColor:
-                      Colors.blueAccent, // Vibrant background color
-                  foregroundColor: Colors.white, // Text/icon color
-                  textStyle: const TextStyle(
-                    fontSize: 18, // Larger text
-                    fontWeight: FontWeight.bold, // Bold text
-                  ),
-                  elevation: 8, // Shadow for depth
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
-                  ),
-                  shadowColor:
-                      Colors.blue.withOpacity(0.4), // Subtle shadow color
-                ),
-                child: const Text("Next"),
+        bottomNavigationBar: widget.isMock || _selectedIndex == null
+            ? null
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 25),
+                    child: ElevatedButton(
+                      onPressed: _nextQuestion,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(150, 30),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        shadowColor: Colors.blue.withOpacity(0.4),
+                      ),
+                      child: const Text("Next"),
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
       ),
     );
   }
