@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../data/models/question.dart';
-import '../../data/services/navigation_service.dart';
-import '../../utils/Dialogs/dialog.dart';
-import '../../view_model/question_viewmodel.dart';
-import '../../view_model/user_viewmodel.dart';
+import '../../../data/models/question.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../utils/dialog.dart';
+import '../../../utils/themes.dart';
+import '../../../view_model/question_viewmodel.dart';
+import '../../../view_model/user_viewmodel.dart';
 
 class QuizScreen extends StatefulWidget {
-  final String category;
-  final String? topicId;
-  final String? topicName;
+  final String categoryId;
+  final String topicId;
+  final String setId;
+  final String setName;
   final bool isMock;
 
   const QuizScreen({
     super.key,
-    required this.category,
-    this.topicId,
-    this.topicName,
+    required this.categoryId,
+    required this.topicId,
+    required this.setId,
+    required this.setName,
     required this.isMock,
   });
 
@@ -31,8 +34,6 @@ class _QuizScreenState extends State<QuizScreen> {
   int _score = 0;
   int? _selectedIndex; // Track the selected answer
   late DateTime _startTime;
-  final String explaination =
-      "This is a dummy paragraph where the explaination will be showed only for the practice session have to check category then I have to print out the explaination";
 
   @override
   void initState() {
@@ -44,14 +45,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Future<void> _loadQuestions() async {
     final qVM = Provider.of<QuestionViewModel>(context, listen: false);
 
-    List<Question> fetched;
-
-    if (widget.isMock) {
-      fetched = await qVM.fetchQuestionsForCategory(widget.category);
-    } else {
-      fetched =
-          await qVM.fetchQuestionsForTopic(widget.category, widget.topicId!);
-    }
+    List<Question> fetched = await qVM.fetchQuestions(widget.categoryId, widget.topicId, widget.setId);
 
     setState(() {
       _questions = fetched;
@@ -94,6 +88,7 @@ class _QuizScreenState extends State<QuizScreen> {
           'score': _score,
           'total': _questions.length,
           'timeTaken': duration,
+          'setId': widget.setId,
         },
       );
     }
@@ -140,7 +135,7 @@ class _QuizScreenState extends State<QuizScreen> {
       return Scaffold(
           appBar: AppBar(
             title: Text(
-              widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+              widget.isMock ? "Mock Quiz" : "Practice - ${widget.setName}",
             ),
           ),
           body: Center(
@@ -154,7 +149,7 @@ class _QuizScreenState extends State<QuizScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+            widget.isMock ? "Mock Quiz" : "Practice - ${widget.setName}",
           ),
         ),
         body: Center(child: CircularProgressIndicator()),
@@ -168,9 +163,9 @@ class _QuizScreenState extends State<QuizScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.isMock ? "Mock Quiz" : "Practice - ${widget.topicName}",
+            widget.isMock ? "Mock Quiz" : "Practice - ${widget.setName}",
           ),
-          actions: [
+          actions: widget.isMock ? [] : [
             IconButton(
               icon: const Icon(
                 Icons.bookmark,
@@ -182,80 +177,85 @@ class _QuizScreenState extends State<QuizScreen> {
             )
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Q${_currentIndex + 1}/${_questions.length}",
-                  style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey)),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.teal.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  q.question,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.teal.shade700),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ...List.generate(q.options.length, (i) {
-                Color buttonColor = Colors.teal; // Default color
-                if (_selectedIndex != null && !widget.isMock) {
-                  if (i == q.correctIndex) {
-                    buttonColor = Colors.green.shade700; // Correct answer
-                  } else if (i == _selectedIndex && i != q.correctIndex) {
-                    buttonColor = Colors.red.shade700; // Incorrect answer
-                  }
-                }
-
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: buttonColor,
-                      disabledBackgroundColor:
-                          buttonColor, // Maintain color when disabled
-                      shape: RoundedRectangleBorder(
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Q${_currentIndex + 1}/${_questions.length}",
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.teal.shade50,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 4,
-                    ),
-                    onPressed: _selectedIndex == null
-                        ? () => _submitAnswer(i)
-                        : null, // Disable button after selection
-                    child: Text(
-                      q.options[i],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      child: Text(
+                        q.question,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: myTealShade),
                       ),
                     ),
-                  ),
-                );
-              }),
-              if (!widget.isMock && _selectedIndex != null) ...[
-                SizedBox(height: 10),
-                Text("Explanation",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                SizedBox(height: 10),
-                Text(explaination, style: TextStyle(fontSize: 18)),
-              ],
-            ],
-          ),
+                    const SizedBox(height: 24),
+                    ...List.generate(q.options.length, (i) {
+                      Color buttonColor = myTealShade; // Default color
+                      if (_selectedIndex != null && !widget.isMock) {
+                        if (i == q.correctIndex) {
+                          buttonColor = Colors.green.shade600; // Correct answer
+                        } else if (i == _selectedIndex && i != q.correctIndex) {
+                          buttonColor = Colors.red.shade600; // Incorrect answer
+                        }
+                      }
+                
+                      return Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(10),
+                            backgroundColor: buttonColor,
+                            disabledBackgroundColor:
+                                buttonColor, // Maintain color when disabled
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 4,
+                          ),
+                          onPressed: _selectedIndex == null
+                              ? () => _submitAnswer(i)
+                              : null, // Disable button after selection
+                          child: Text(
+                            q.options[i],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                    if (!widget.isMock && _selectedIndex != null) ...[
+                      SizedBox(height: 10),
+                      Text("Explanation",
+                          style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(q.explanation, style: TextStyle(fontSize: 16)),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: widget.isMock || _selectedIndex == null
             ? null
@@ -270,7 +270,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         minimumSize: const Size(150, 30),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 15),
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.teal.shade500,
                         foregroundColor: Colors.white,
                         textStyle: const TextStyle(
                           fontSize: 18,
@@ -280,11 +280,10 @@ class _QuizScreenState extends State<QuizScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        shadowColor: Colors.blue.withOpacity(0.4),
                       ),
                       child: const Text("Next"),
                     ),
-                  )
+                  ),
                 ],
               ),
       ),

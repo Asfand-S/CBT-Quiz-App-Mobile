@@ -1,23 +1,23 @@
 import 'dart:io';
-
-import 'package:cbt_quiz_android/PaymentGateway/payment_page.dart';
-import 'package:cbt_quiz_android/data/services/firebase_service.dart';
-import 'package:cbt_quiz_android/utils/Dialogs/dialog.dart';
-import 'package:cbt_quiz_android/view/screens/home_screen.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../data/services/navigation_service.dart';
-import '../../view_model/user_viewmodel.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../data/services/firebase_service.dart';
+import '../../../utils/themes.dart';
+import '../../../view_model/user_viewmodel.dart';
+import '../../../utils/dialog.dart';
+import '../utility_screens/payment_screen.dart';
+import 'home_screen.dart';
 
 class QuizTypeScreen extends StatefulWidget {
-  final String category;
+  final String categoryId;
 
-  const QuizTypeScreen({super.key, required this.category});
+  const QuizTypeScreen({super.key, required this.categoryId});
 
   @override
   State<QuizTypeScreen> createState() => _QuizTypeScreenState();
@@ -163,22 +163,19 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String name =
-        widget.category[0].toUpperCase() + widget.category.substring(1);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('$name Quiz'),
+        title: Text('${widget.categoryId} Quiz'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.quiz_rounded,
               size: 80,
-              color: Colors.teal,
+              color: myTealShade,
             ),
             const SizedBox(height: 16),
             Text(
@@ -186,7 +183,7 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+                color: myTealShade,
               ),
             ),
             const SizedBox(height: 40),
@@ -199,12 +196,12 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
               onPressed: () {
                 NavigationService.navigateTo(
                   '/topics',
-                  arguments: widget.category,
+                  arguments: widget.categoryId,
                 );
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 60),
-                backgroundColor: Colors.teal.shade700,
+                backgroundColor: myTealShade,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -223,21 +220,22 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
               ),
               onPressed: () {
                 NavigationService.navigateTo(
-                  '/quiz',
+                  '/sets',
                   arguments: {
-                    'category': widget.category,
-                    'isMock': true,
+                    'categoryId': widget.categoryId,
+                    'topicId': '',
+                    'isMock': true
                   },
                 );
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 60),
-                backgroundColor: Colors.teal.shade700,
+                backgroundColor: myTealShade,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 8,
-                shadowColor: Colors.teal.shade600,
+                shadowColor: myTealShade,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
@@ -252,12 +250,12 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
               onPressed: () {
                 NavigationService.navigateTo(
                   '/bookmarks',
-                  arguments: widget.category,
+                  arguments: widget.categoryId,
                 );
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 60),
-                backgroundColor: Colors.teal.shade700,
+                backgroundColor: myTealShade,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -283,7 +281,7 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                   onPressed: googleSignInButton,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 60),
-                    backgroundColor: Colors.teal.shade700,
+                    backgroundColor: myTealShade,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

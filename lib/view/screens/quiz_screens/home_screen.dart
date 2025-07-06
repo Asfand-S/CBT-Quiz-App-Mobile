@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../data/services/navigation_service.dart';
-import '../../view_model/user_viewmodel.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../view_model/user_viewmodel.dart';
+import '../../../utils/themes.dart';
 
 class HomeScreen extends StatelessWidget {
-  final List<String> categories = ['nursing', 'midwifery'];
+  final List<String> categories = ['Nursing', 'Midwifery'];
 
   HomeScreen({super.key});
 
@@ -18,11 +19,7 @@ class HomeScreen extends StatelessWidget {
         if (!snapshot.hasData) {
           return Scaffold(
             body: Center(
-              child: CircularProgressIndicator(
-                color: Colors.teal.shade700,
-                strokeWidth: 6,
-                backgroundColor: Colors.teal.shade100,
-              ),
+              child: CircularProgressIndicator(),
             ),
           );
         }
@@ -36,14 +33,14 @@ class HomeScreen extends StatelessWidget {
                   Icon(
                     Icons.wifi_off,
                     size: 60,
-                    color: Colors.teal.shade700,
+                    color: myTealShade,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Please connect to the internet.',
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.teal.shade700,
+                      color: myTealShade,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
                     ),
@@ -57,39 +54,9 @@ class HomeScreen extends StatelessWidget {
         // ✅ Access allowed
         return Scaffold(
           appBar: AppBar(
-            title: const Text(
-              'Quiz Categories',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                fontSize: 24,
-                letterSpacing: 1.0,
-              ),
-            ),
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.teal.shade700,
-            elevation: 0,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.teal.shade700, Colors.teal.shade500],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
+            title: const Text('Quiz Categories'),
           ),
           body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color.fromARGB(255, 187, 226, 223),
-                  const Color.fromARGB(255, 183, 218, 214),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
             child: Column(
               children: [
                 Expanded(
@@ -98,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                     crossAxisCount: 1,
                     childAspectRatio: 1.8,
                     mainAxisSpacing: 16,
-                    children: categories.map((cat) {
+                    children: categories.map((category) {
                       return Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -110,30 +77,13 @@ class HomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           onTap: () => NavigationService.navigateTo(
                             '/quizType',
-                            arguments: cat,
+                            arguments: category,
                           ),
                           child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.teal.shade300,
-                                  Colors.teal.shade700,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.teal.shade200.withOpacity(0.4),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
+                            decoration: gradientBackground,
                             child: Center(
                               child: Text(
-                                cat.toUpperCase(),
+                                category,
                                 style: const TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.w800,
@@ -204,14 +154,7 @@ class HomeScreen extends StatelessWidget {
           onTap: onPressed,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                colors: [Colors.teal.shade700, Colors.teal.shade500],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            decoration: gradientBackground,
             child: Center(
               child: Icon(
                 icon,

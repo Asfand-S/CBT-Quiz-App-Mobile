@@ -1,12 +1,14 @@
 import 'dart:io';
-import 'package:cbt_quiz_android/data/services/firebase_service.dart';
-import 'package:cbt_quiz_android/data/services/navigation_service.dart';
-import 'package:cbt_quiz_android/main.dart';
-import 'package:cbt_quiz_android/utils/Dialogs/dialog.dart';
-import 'package:cbt_quiz_android/view/screens/home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../data/services/firebase_service.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../main.dart';
+import '../../../utils/dialog.dart';
+import '../quiz_screens/home_screen.dart';
+
+import '../../../utils/themes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -103,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Icon(
                     Icons.chat_bubble_outline,
                     size: mq.width * 0.2,
-                    color: Colors.blue.shade700,
+                    color: myTealShade,
                   ),
                 ),
                 SizedBox(height: mq.height * 0.05),

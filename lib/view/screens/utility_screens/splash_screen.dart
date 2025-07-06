@@ -1,9 +1,9 @@
-import 'package:cbt_quiz_android/data/services/firebase_service.dart';
+import 'package:cbt_quiz_android/utils/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../data/services/navigation_service.dart';
-import '../../view_model/topic_viewmodel.dart';
-import '../../view_model/user_viewmodel.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../data/services/firebase_service.dart';
+import '../../../view_model/user_viewmodel.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,7 +17,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Provider.of<UserViewModel>(context, listen: false).init();
-    Provider.of<TopicViewModel>(context, listen: false).fetchTopics();
     userCheck();
   }
 
@@ -38,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Text("QUIZ APP",
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: myTealShade)),
       ),
     );
   }

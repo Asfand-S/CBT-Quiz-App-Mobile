@@ -1,41 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../data/services/navigation_service.dart';
-import '../../view_model/topic_viewmodel.dart';
+import '../../../data/models/set.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../utils/themes.dart';
+import '../../../view_model/set_viewmodel.dart';
 
-class PracticeTopicsScreen extends StatelessWidget {
-  final String category;
+class SetsScreen extends StatelessWidget {
+  final String categoryId;
+  final String topicId;
+  final bool isMock;
 
-  const PracticeTopicsScreen({super.key, required this.category});
+  const SetsScreen({
+    super.key, 
+    required this.categoryId,
+    required this.topicId,
+    required this.isMock
+    });
 
   @override
   Widget build(BuildContext context) {
-    final topicVM = Provider.of<TopicViewModel>(context);
+    final setVM = Provider.of<SetViewModel>(context);
+    String titleText = "Practice Quiz Sets";
+    if (isMock) {
+      titleText = "Mock Quiz Sets";
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Topics'),
+        title: Text(titleText),
       ),
-      body: Builder(
-        builder: (_) {
-          final topics = category == 'nursing'
-              ? topicVM.nursingTopics
-              : topicVM.midwiferyTopics;
+      body: FutureBuilder<List<Set>>(
+        future: setVM.fetchSets(categoryId, topicId),
+        builder: (_, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+          final sets = snapshot.data ?? [];
 
-          if (topics.isEmpty) {
-            return Center(
-              child: Text(
-                "No topics added yet.",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            );
-          }
+          if (sets.isEmpty) return Center(child: Text("No quiz sets added yet.", style: TextStyle(fontSize: 16, color: Colors.grey)));
 
           return GridView.count(
             crossAxisCount: 2,
             padding: EdgeInsets.all(16),
             childAspectRatio: 3,
-            children: topics.map((topic) {
+            children: sets.map((set) {
               return Card(
                 elevation: 6,
                 margin: EdgeInsets.all(8),
@@ -49,25 +55,19 @@ class PracticeTopicsScreen extends StatelessWidget {
                     NavigationService.navigateTo(
                       '/quiz',
                       arguments: {
-                        'category': category,
-                        'isMock': false,
-                        'topicId': topic.id,
-                        'topicName': topic.name,
+                        'categoryId': categoryId,
+                        'topicId': topicId,
+                        'setId': set.id,
+                        'setName': set.name,
+                        'isMock': isMock,
                       },
                     );
                   },
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                        colors: [Colors.teal.shade300, Colors.teal.shade700],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
+                    decoration: gradientBackground,
                     child: Center(
                       child: Text(
-                        topic.name,
+                        set.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

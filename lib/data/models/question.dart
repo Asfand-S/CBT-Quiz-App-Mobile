@@ -16,11 +16,15 @@ class Question {
   @HiveField(3)
   final int correctIndex;
 
+  @HiveField(4)
+  final String explanation;
+
   Question({
     required this.id,
     required this.question,
     required this.options,
     required this.correctIndex,
+    required this.explanation,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,6 +32,7 @@ class Question {
       'question': question,
       'options': options,
       'correctIndex': correctIndex,
+      'explanation': explanation
     };
   }
 
@@ -37,6 +42,7 @@ class Question {
       question: map['question'],
       options: List<String>.from(map['options']),
       correctIndex: map['correctIndex'],
+      explanation: map['explanation'],
     );
   }
 }

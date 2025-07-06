@@ -1,8 +1,8 @@
-import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../data/models/question.dart';
+import '../data/models/user.dart';
 import '../data/services/firebase_service.dart';
 import '../data/services/hive_services.dart';
 
@@ -69,6 +69,11 @@ class UserViewModel extends ChangeNotifier {
     if (!prefs.containsKey('bookmarks')) {
       await prefs.setStringList('bookmarks', []);
     }
+
+    // If 'passed_quizzes' doesn't exist, set it to empty list
+    if (!prefs.containsKey('passed_quizzes')) {
+      await prefs.setStringList('passed_quizzes', []);
+    }
   }
 
   Future<bool> canAccessApp() async {
@@ -94,12 +99,29 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<Question?>> getBookmarkedQuestions(String category) async {
-    if (_currentUser == null || _currentUser.bookmarks == null) {
+  Future<List<Question?>> getBookmarkedQuestions(String categoryId) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> bookmarks = prefs.getStringList('bookmarks') ?? [];
+
+    if (_currentUser == null || bookmarks.isEmpty) {
       return [];
     } else {
       return await _firebaseService.getBookmarkedQuestions(
-          category, _currentUser.bookmarks);
+          categoryId, _currentUser.bookmarks);
     }
+  }
+
+  Future<List<String>> getPassedQuizzes() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList('passed_quizzes') ?? [];
+  }
+
+  Future<void> updatePassedQuizzes(String quizId, double percentage) async {
+    if (percentage < 60) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    List<String> passedQuizzes = prefs.getStringList('passed_quizzes') ?? [];
+    passedQuizzes.add(quizId);
+    await prefs.setStringList('passed_quizzes', passedQuizzes);
   }
 }

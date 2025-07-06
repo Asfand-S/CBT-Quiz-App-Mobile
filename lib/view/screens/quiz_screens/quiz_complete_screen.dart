@@ -1,16 +1,21 @@
+import 'package:cbt_quiz_android/utils/themes.dart';
 import 'package:flutter/material.dart';
-import '../../data/services/navigation_service.dart';
+import 'package:provider/provider.dart';
+import '../../../data/services/navigation_service.dart';
+import '../../../view_model/user_viewmodel.dart';
 
 class QuizCompleteScreen extends StatelessWidget {
   final int score;
   final int total;
   final Duration timeTaken;
+  final String setId;
 
   const QuizCompleteScreen({
     super.key,
     required this.score,
     required this.total,
     required this.timeTaken,
+    required this.setId,
   });
 
   String _formatDuration(Duration duration) {
@@ -21,7 +26,10 @@ class QuizCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+
     final percent = ((score / total) * 100).toStringAsFixed(1);
+    userViewModel.updatePassedQuizzes(setId, (score / total) * 100);
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +89,7 @@ class QuizCompleteScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: myTealShade,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   textStyle: const TextStyle(fontSize: 18),

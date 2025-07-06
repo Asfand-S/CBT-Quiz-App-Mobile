@@ -1,44 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'question.dart';
+part of 'set.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class QuestionAdapter extends TypeAdapter<Question> {
+class SetAdapter extends TypeAdapter<Set> {
   @override
-  final int typeId = 2;
+  final int typeId = 3;
 
   @override
-  Question read(BinaryReader reader) {
+  Set read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Question(
+    return Set(
       id: fields[0] as String,
-      question: fields[1] as String,
-      options: (fields[2] as List).cast<String>(),
-      correctIndex: fields[3] as int,
-      explanation: fields[4] as String,
+      name: fields[1] as String,
+      lastUpdated: fields[2] as DateTime?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Question obj) {
+  void write(BinaryWriter writer, Set obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.question)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.options)
-      ..writeByte(3)
-      ..write(obj.correctIndex)
-      ..writeByte(4)
-      ..write(obj.explanation);
+      ..write(obj.lastUpdated);
   }
 
   @override
@@ -47,7 +41,7 @@ class QuestionAdapter extends TypeAdapter<Question> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QuestionAdapter &&
+      other is SetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

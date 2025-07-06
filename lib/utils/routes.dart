@@ -1,12 +1,15 @@
-import 'package:cbt_quiz_android/PaymentGateway/payment_page.dart';
-import 'package:cbt_quiz_android/view/screens/bookmark_questions.dart';
+import 'package:cbt_quiz_android/data/models/question.dart';
 import 'package:flutter/material.dart';
-import '../view/screens/splash_screen.dart';
-import '../view/screens/home_screen.dart';
-import '../view/screens/quiz_type_screen.dart';
-import '../view/screens/practice_topics_screen.dart';
-import '../view/screens/quiz_screen.dart';
-import '../view/screens/quiz_complete_screen.dart';
+import '../view/screens/quiz_screens/bookmarked_question_screen.dart';
+import '../view/screens/quiz_screens/sets_screen.dart';
+import '../view/screens/utility_screens/splash_screen.dart';
+import '../view/screens/quiz_screens/home_screen.dart';
+import '../view/screens/quiz_screens/quiz_type_screen.dart';
+import '../view/screens/quiz_screens/practice_topics_screen.dart';
+import '../view/screens/quiz_screens/quiz_screen.dart';
+import '../view/screens/quiz_screens/quiz_complete_screen.dart';
+import '../view/screens/utility_screens/payment_screen.dart';
+import '../view/screens/quiz_screens/bookmarks_list_screen.dart';
 
 Route<dynamic>? onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -22,27 +25,43 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     case '/bookmarks':
       final args = settings.arguments as String;
       return MaterialPageRoute(
-          builder: (_) => BookmarkedQuestionsPage(category: args));
+          builder: (_) => BookmarksPage(categoryId: args));
+
+    case '/question':
+      final args = settings.arguments as Question;
+      return MaterialPageRoute(
+          builder: (_) => QuestionScreen(question: args));
 
     case '/quizType':
       final args = settings.arguments as String; // category
       return MaterialPageRoute(
-        builder: (_) => QuizTypeScreen(category: args),
+        builder: (_) => QuizTypeScreen(categoryId: args),
       );
 
     case '/topics':
       final args = settings.arguments as String; // category
       return MaterialPageRoute(
-        builder: (_) => PracticeTopicsScreen(category: args),
+        builder: (_) => PracticeTopicsScreen(categoryId: args),
+      );
+
+    case '/sets':
+      final args = settings.arguments as Map<String, dynamic>;
+      return MaterialPageRoute(
+        builder: (_) => SetsScreen(
+          categoryId: args['categoryId'],
+          topicId: args['topicId'],
+          isMock: args['isMock'],
+        ),
       );
 
     case '/quiz':
       final args = settings.arguments as Map<String, dynamic>;
       return MaterialPageRoute(
         builder: (_) => QuizScreen(
-          category: args['category'],
+          categoryId: args['categoryId'],
           topicId: args['topicId'],
-          topicName: args['topicName'],
+          setId: args['setId'],
+          setName: args['setName'],
           isMock: args['isMock'],
         ),
       );
@@ -54,6 +73,7 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
           score: args['score']!,
           total: args['total']!,
           timeTaken: args['timeTaken']!,
+          setId: args['setId'],
         ),
       );
 

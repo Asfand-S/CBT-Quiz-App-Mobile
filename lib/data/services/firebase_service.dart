@@ -2,12 +2,14 @@ import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../models/question.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/topic.dart';
+import '../models/set.dart';
+import '../models/question.dart';
 
 class FirebaseService {
   static FirebaseAuth auth = FirebaseAuth.instance;
-  static FirebaseFirestore firestore = FirebaseFirestore.instance;
+  static FirebaseFirestore _db = FirebaseFirestore.instance;
 
   static User? get user => auth.currentUser;
 
@@ -16,7 +18,7 @@ class FirebaseService {
 
     if (currentUser == null) return false;
 
-    final doc = await firestore.collection("users").doc(currentUser.uid).get();
+    final doc = await _db.collection("users").doc(currentUser.uid).get();
     return doc.exists;
   }
 
@@ -40,7 +42,7 @@ class FirebaseService {
       isPremium: false,
       bookmarks: [],
     );
-    return await firestore
+    return await _db
         .collection("users")
         .doc(currentUser.uid)
         .set(chatUser.toMap());
@@ -52,7 +54,7 @@ class FirebaseService {
       if (currentUser == null) return null;
 
       DocumentSnapshot doc =
-          await firestore.collection('users').doc(currentUser.uid).get();
+          await _db.collection('users').doc(currentUser.uid).get();
 
       if (doc.exists && doc.data() != null) {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>);
@@ -73,7 +75,7 @@ class FirebaseService {
       return;
     }
 
-    return await firestore
+    return await _db
         .collection('users')
         .doc(currentUser.uid)
         .update({'isPremium': true});
@@ -81,99 +83,136 @@ class FirebaseService {
 
   Future<void> updateUserBookmarks(
       String userId, List<dynamic> bookmarks) async {
-    await firestore.collection('users').doc(userId).update({
+    await _db.collection('users').doc(userId).update({
       'bookmarks': bookmarks,
     });
   }
 
 
 
-  Future<List<Question?>> getBookmarkedQuestions(
-      String category, List<dynamic> bookmarks) async {
-    if (bookmarks.isEmpty) return [];
 
-    final topicsSnapshot = await firestore
-        .collection('categories')
-        .doc(category)
-        .collection('topics')
-        .get();
+  Future<List<Question>> getBookmarkedQuestions(
+    String categoryId,
+    List<dynamic> bookmarks,
+  ) async {
+    final List<Question> bookmarkedQuestions = [];
 
-    List<Question?> allQuestions = [];
+    final categoryRef = _db.collection('categories').doc(categoryId.toLowerCase());
 
-    for (final topicDoc in topicsSnapshot.docs) {
-      final questionsSnapshot =
-          await topicDoc.reference.collection('questions').get();
-
-      final questions = questionsSnapshot.docs.map((doc) {
-        if (!bookmarks.contains(doc.id)) return null;
-        return Question.fromMap(doc.id, doc.data());
-      }).toList();
-
-      allQuestions.addAll(questions);
-    }
-
-    return allQuestions;
-  }
-
-  Future<List<Topic>> getTopics(String category) async {
-    final snapshot = await firestore
-        .collection('categories')
-        .doc(category)
-        .collection('topics')
-        .get();
-
-    return snapshot.docs
-        .map((doc) => Topic.fromMap(doc.id, doc.data()))
-        .toList();
-  }
-
-  Future<List<Question>> getQuestionsForTopic(String category, String topicId, bool isPaid) async {
-    final snapshot = await firestore
-        .collection('categories')
-        .doc(category)
-        .collection('topics')
-        .doc(topicId)
-        .collection('questions')
-        .get();
-
-    final questions = snapshot.docs
-        .map((doc) => Question.fromMap(doc.id, doc.data()))
-        .toList();
-
-    if (isPaid) {
-      questions.shuffle();
-      return questions;
-    }
-    else {
-      if (questions.length < 4) return questions;
-      return questions.sublist(0, 4);
-    }
-  }
-
-  Future<List<Question>> getAllQuestionsForCategory(String category, bool isPaid) async {
-    final topicsSnapshot = await firestore
-        .collection('categories')
-        .doc(category)
-        .collection('topics')
-        .get();
-
-    List<Question> allQuestions = [];
+    // Step 1: Get all topics
+    final topicsSnapshot = await categoryRef.collection('topics').get();
 
     for (final topicDoc in topicsSnapshot.docs) {
-      final questionsSnapshot =
-          await topicDoc.reference.collection('questions').get();
+      final topicId = topicDoc.id;
 
-      var questions = questionsSnapshot.docs.map((doc) {
-        return Question.fromMap(doc.id, doc.data());
-      }).toList();
+      // Step 2: Get all sets in this topic
+      final setsSnapshot = await categoryRef.collection('topics').doc(topicId).collection('sets').get();
 
-      if (!isPaid && questions.length > 4) {
-        questions = questions.sublist(0, 4);
+      for (final setDoc in setsSnapshot.docs) {
+        final setId = setDoc.id;
+
+        // Step 3: Get all questions in this set
+        final questionsSnapshot = await categoryRef
+            .collection('topics')
+            .doc(topicId)
+            .collection('sets')
+            .doc(setId)
+            .collection('questions')
+            .get();
+
+        for (final questionDoc in questionsSnapshot.docs) {
+          final questionData = questionDoc.data();
+          final questionId = questionDoc.id;
+
+          if (bookmarks.contains(questionId)) {
+            bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
+          }
+        }
       }
-
-      allQuestions.addAll(questions);
     }
 
-    return allQuestions;
+    return bookmarkedQuestions;
+  }
+
+  Future<List<Topic>> getTopics(String categoryId) async {
+    final query = await _db
+        .collection('categories')
+        .doc(categoryId.toLowerCase())
+        .collection('topics')
+        .get();
+    return query.docs.map((doc) => Topic.fromMap(doc.id, doc.data())).toList();
+  }
+
+  Future<List<Set>> getSets(String categoryId, String topicId) async {
+    QuerySnapshot<Map<String, dynamic>> query;
+
+    if (topicId == "") {
+      query = await _db
+          .collection('categories')
+          .doc(categoryId.toLowerCase())
+          .collection('mock_sets')
+          .orderBy('createdAt')
+          .get();
+    } else {
+      query = await _db
+          .collection('categories')
+          .doc(categoryId.toLowerCase())
+          .collection('topics')
+          .doc(topicId)
+          .collection('sets')
+          .orderBy('createdAt')
+          .get();
+    }
+    
+    final prefs = await SharedPreferences.getInstance();
+    List<String> clearedSetsIds = prefs.getStringList("passed_quizzes") ?? [];
+    print("\n\n\n\nAsfand Debugging: $clearedSetsIds");
+    List<Set> setsOpened = [];
+
+    for (var doc in query.docs) {
+      if (clearedSetsIds.contains(doc.id)) {
+        setsOpened.add(Set.fromMap(doc.id, doc.data()));
+      }
+      else {
+        setsOpened.add(Set.fromMap(doc.id, doc.data()));
+        break;
+      }
+    }
+
+    return setsOpened;
+  }
+
+  Future<List<Question>> getQuestions({
+    required String categoryId,
+    required String topicId,
+    required String setId,
+  }) async {
+    if (topicId == "") {
+      final query = await _db
+          .collection('categories')
+          .doc(categoryId.toLowerCase())
+          .collection('mock_sets')
+          .doc(setId)
+          .collection('questions')
+          .get();
+
+      return query.docs
+          .map((doc) => Question.fromMap(doc.id, doc.data()))
+          .toList();
+    } else {
+      final query = await _db
+          .collection('categories')
+          .doc(categoryId.toLowerCase())
+          .collection('topics')
+          .doc(topicId)
+          .collection('sets')
+          .doc(setId)
+          .collection('questions')
+          .get();
+
+      return query.docs
+          .map((doc) => Question.fromMap(doc.id, doc.data()))
+          .toList();
+    }
   }
 }

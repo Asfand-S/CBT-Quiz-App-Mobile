@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-
-import '../data/services/firebase_service.dart';
+import '../../../data/services/firebase_service.dart';
 
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
