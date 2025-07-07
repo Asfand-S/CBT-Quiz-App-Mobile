@@ -4,7 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../data/models/question.dart';
 import '../data/models/user.dart';
 import '../data/services/firebase_service.dart';
-import '../data/services/hive_services.dart';
+import '../data/services/hive_service.dart';
 
 class UserViewModel extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
@@ -28,7 +28,9 @@ class UserViewModel extends ChangeNotifier {
     // _currentUser = await _firebaseService.getCurrentUserProfile();
 
     if (isPaid && isOnline) {
-      await _hiveService.ensureLocalData();
+      print("\n\n\n📦 HIVE SERVICES TRIGGERED...");
+      // await _hiveService.ensureLocalData();
+      await _hiveService.printLocalDataSummary();
     }
     notifyListeners();
   }
@@ -47,7 +49,7 @@ class UserViewModel extends ChangeNotifier {
 
   Future<void> getValuesFromSharedPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isPaid', false);
+    await prefs.setBool('isPaid', true);
 
     // If 'isPaid' doesn't exist, set it to false
     if (!prefs.containsKey('isPaid')) {

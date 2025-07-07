@@ -90,7 +90,6 @@ class FirebaseService {
 
 
 
-
   Future<List<Question>> getBookmarkedQuestions(
     String categoryId,
     List<dynamic> bookmarks,
@@ -166,7 +165,6 @@ class FirebaseService {
     
     final prefs = await SharedPreferences.getInstance();
     List<String> clearedSetsIds = prefs.getStringList("passed_quizzes") ?? [];
-    print("\n\n\n\nAsfand Debugging: $clearedSetsIds");
     List<Set> setsOpened = [];
 
     for (var doc in query.docs) {
@@ -182,11 +180,11 @@ class FirebaseService {
     return setsOpened;
   }
 
-  Future<List<Question>> getQuestions({
-    required String categoryId,
-    required String topicId,
-    required String setId,
-  }) async {
+  Future<List<Question>> getQuestions(
+    String categoryId,
+    String topicId,
+    String setId,
+  ) async {
     if (topicId == "") {
       final query = await _db
           .collection('categories')
