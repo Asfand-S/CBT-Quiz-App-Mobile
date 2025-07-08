@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../data/services/navigation_service.dart';
 import '../../../view_model/user_viewmodel.dart';
 import '../../../utils/themes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<String> categories = ['Nursing', 'Midwifery'];
@@ -113,13 +114,29 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       _buildActionButton(
                         icon: Icons.info_outline,
-                        onPressed: () {},
+                        onPressed: () {
+                          NavigationService.navigateTo('/aboutus');
+                        },
                         tooltip: 'About',
                       ),
                       const SizedBox(width: 12),
                       _buildActionButton(
                         icon: Icons.share,
-                        onPressed: () {},
+                        onPressed: () async {
+                          final url = Uri.parse(
+                              'https://whatsapp.com/channel/0029VbAvkqrDuMRlrq24EU2d');
+
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url,
+                                mode: LaunchMode.externalApplication);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Could not open WhatsApp Channel')),
+                            );
+                          }
+                        },
                         tooltip: 'Share',
                       ),
                       const SizedBox(width: 12),
