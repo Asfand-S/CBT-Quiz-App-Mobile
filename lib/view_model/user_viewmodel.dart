@@ -137,6 +137,8 @@ class UserViewModel extends ChangeNotifier {
 
       switch (field) {
         case 'isPremium':
+          _hiveService.ensureLocalQuizData();
+          ensureLocalUserData();
           await prefs.setBool('isPremium', value);
           break;
         case 'bookmarks':
