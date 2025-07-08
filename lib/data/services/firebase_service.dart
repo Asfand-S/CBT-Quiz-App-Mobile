@@ -1,11 +1,10 @@
 import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/topic.dart';
 import '../models/set.dart';
 import '../models/question.dart';
+import '../models/custom_user.dart';
 
 class FirebaseService {
   static FirebaseAuth auth = FirebaseAuth.instance;
@@ -20,10 +19,6 @@ class FirebaseService {
 
     final doc = await _db.collection("users").doc(currentUser.uid).get();
     return doc.exists;
-  }
-
-  static Future<void> userSignOut() async {
-    return await auth.signOut();
   }
 
   static Future<void> createUser() async {
@@ -48,90 +43,7 @@ class FirebaseService {
         .set(chatUser.toMap());
   }
 
-  Future<UserModel?> getCurrentUserProfile() async {
-    try {
-      final currentUser = user;
-      if (currentUser == null) return null;
 
-      DocumentSnapshot doc =
-          await _db.collection('users').doc(currentUser.uid).get();
-
-      if (doc.exists && doc.data() != null) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
-      } else {
-        print('User document does not exist');
-        return null;
-      }
-    } catch (e) {
-      print('Error fetching user profile: $e');
-      return null;
-    }
-  }
-
-  Future<void> setPremium() async {
-    final currentUser = auth.currentUser;
-    if (currentUser == null) {
-      const SnackBar(content: Text("ser does not exist"));
-      return;
-    }
-
-    return await _db
-        .collection('users')
-        .doc(currentUser.uid)
-        .update({'isPremium': true});
-  }
-
-  Future<void> updateUserBookmarks(
-      String userId, List<dynamic> bookmarks) async {
-    await _db.collection('users').doc(userId).update({
-      'bookmarks': bookmarks,
-    });
-  }
-
-
-
-  Future<List<Question>> getBookmarkedQuestions(
-    String categoryId,
-    List<dynamic> bookmarks,
-  ) async {
-    final List<Question> bookmarkedQuestions = [];
-
-    final categoryRef = _db.collection('categories').doc(categoryId.toLowerCase());
-
-    // Step 1: Get all topics
-    final topicsSnapshot = await categoryRef.collection('topics').get();
-
-    for (final topicDoc in topicsSnapshot.docs) {
-      final topicId = topicDoc.id;
-
-      // Step 2: Get all sets in this topic
-      final setsSnapshot = await categoryRef.collection('topics').doc(topicId).collection('sets').get();
-
-      for (final setDoc in setsSnapshot.docs) {
-        final setId = setDoc.id;
-
-        // Step 3: Get all questions in this set
-        final questionsSnapshot = await categoryRef
-            .collection('topics')
-            .doc(topicId)
-            .collection('sets')
-            .doc(setId)
-            .collection('questions')
-            .get();
-
-        for (final questionDoc in questionsSnapshot.docs) {
-          final questionData = questionDoc.data();
-          final questionId = questionDoc.id;
-
-          if (bookmarks.contains(questionId)) {
-            bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
-          }
-        }
-      }
-    }
-
-    return bookmarkedQuestions;
-  }
 
   Future<List<Topic>> getTopics(String categoryId) async {
     final query = await _db
@@ -142,7 +54,7 @@ class FirebaseService {
     return query.docs.map((doc) => Topic.fromMap(doc.id, doc.data())).toList();
   }
 
-  Future<List<Set>> getSets(String categoryId, String topicId) async {
+  Future<List<Set>> getSets(String categoryId, String topicId, List<String> passedQuizzes) async {
     QuerySnapshot<Map<String, dynamic>> query;
 
     if (topicId == "") {
@@ -163,12 +75,9 @@ class FirebaseService {
           .get();
     }
     
-    final prefs = await SharedPreferences.getInstance();
-    List<String> clearedSetsIds = prefs.getStringList("passed_quizzes") ?? [];
     List<Set> setsOpened = [];
-
     for (var doc in query.docs) {
-      if (clearedSetsIds.contains(doc.id)) {
+      if (passedQuizzes.contains(doc.id)) {
         setsOpened.add(Set.fromMap(doc.id, doc.data()));
       }
       else {
@@ -211,6 +120,90 @@ class FirebaseService {
       return query.docs
           .map((doc) => Question.fromMap(doc.id, doc.data()))
           .toList();
+    }
+  }
+
+  Future<List<Question>> getBookmarkedQuestions(
+    String categoryId,
+    List<String> bookmarks,
+  ) async {
+    final List<Question> bookmarkedQuestions = [];
+
+    final categoryRef = _db.collection('categories').doc(categoryId.toLowerCase());
+
+    // Step 1: Get all topics
+    final topicsSnapshot = await categoryRef.collection('topics').get();
+
+    for (final topicDoc in topicsSnapshot.docs) {
+      final topicId = topicDoc.id;
+
+      // Step 2: Get all sets in this topic
+      final setsSnapshot = await categoryRef.collection('topics').doc(topicId).collection('sets').get();
+
+      for (final setDoc in setsSnapshot.docs) {
+        final setId = setDoc.id;
+
+        // Step 3: Get all questions in this set
+        final questionsSnapshot = await categoryRef
+            .collection('topics')
+            .doc(topicId)
+            .collection('sets')
+            .doc(setId)
+            .collection('questions')
+            .get();
+
+        for (final questionDoc in questionsSnapshot.docs) {
+          final questionData = questionDoc.data();
+          final questionId = questionDoc.id;
+
+          if (bookmarks.contains(questionId)) {
+            bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
+          }
+        }
+      }
+    }
+
+    return bookmarkedQuestions;
+  }
+
+
+
+  // New functions for Managing User Profile
+  Future<CustomUserModel> getUserProfileFromFirebase(String userId) async {
+    final doc = await _db.collection("users").doc(userId).get();
+    if (doc.exists && doc.data() != null) {
+      final docRef = _db.collection("users").doc(userId);
+      docRef.update({'lastActive': DateTime.now().millisecondsSinceEpoch.toString()});
+      return CustomUserModel.fromMap(doc.data()!);
+    } 
+    else {
+      // Create User
+      final docRef = _db.collection("users").doc(userId);
+      CustomUserModel user = CustomUserModel.fromMap({
+        'id': userId,
+        'isPremium': false,
+        'bookmarks': [],
+        'passedQuizzes': [],
+        'unlockedTopicsNursing': [],
+        'unlockedTopicsMidwifery': [],
+        'email': '',
+        'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+        'lastActive': DateTime.now().millisecondsSinceEpoch.toString(),
+      });
+      docRef.set(user.toMap());
+      return user;
+    }
+  }
+
+  Future<bool> updateUserData(String userId, String field, dynamic value) async {
+    try {
+      await _db
+        .collection('users')
+        .doc(userId)
+        .update({field: value});
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -34,12 +34,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
+
         providers: [
-          ChangeNotifierProvider(create: (_) => TopicViewModel()),
-          ChangeNotifierProvider(create: (_) => SetViewModel()),
-          ChangeNotifierProvider(create: (_) => QuizViewModel()),
-          ChangeNotifierProvider(create: (_) => QuestionViewModel()),
           ChangeNotifierProvider(create: (_) => UserViewModel()),
+          ChangeNotifierProxyProvider<UserViewModel, TopicViewModel>(
+            create: (_) => TopicViewModel(),
+            update: (_, userViewModel, topicViewModel) =>
+                topicViewModel!..setUserViewModel(userViewModel),
+          ),
+          ChangeNotifierProxyProvider<UserViewModel, SetViewModel>(
+            create: (_) => SetViewModel(),
+            update: (_, userViewModel, setViewModel) =>
+                setViewModel!..setUserViewModel(userViewModel),
+          ),
+          ChangeNotifierProxyProvider<UserViewModel, QuizViewModel>(
+            create: (_) => QuizViewModel(),
+            update: (_, userViewModel, quizViewModel) =>
+                quizViewModel!..setUserViewModel(userViewModel),
+          ),
+          ChangeNotifierProxyProvider<UserViewModel, QuestionViewModel>(
+            create: (_) => QuestionViewModel(),
+            update: (_, userViewModel, questionViewModel) =>
+                questionViewModel!..setUserViewModel(userViewModel),
+          ),
         ],
         child: MaterialApp(
             theme: appTheme,

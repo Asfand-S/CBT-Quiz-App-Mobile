@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../data/models/custom_user.dart';
 import '../data/models/question.dart';
 import '../data/services/firebase_service.dart';
 import '../data/services/hive_service.dart';
+import 'user_viewmodel.dart';
 
 class QuestionViewModel extends ChangeNotifier {
+  late UserViewModel _userViewModel;
+
+  void setUserViewModel(UserViewModel userVM) {
+    _userViewModel = userVM;
+  }
+
+  CustomUserModel get currentUser => _userViewModel.currentUser;
   final FirebaseService _firebaseService = FirebaseService();
   final HiveService _hiveService = HiveService();
 
   Future<List<Question>> fetchQuestions(String categoryId, String topicId, String setId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final isPaid = prefs.getBool('isPaid') ?? false;
-
+    List<Question> questions = [];
     try {
-      if (isPaid) {
-        return await _hiveService.getQuestions(categoryId, topicId, setId);
+      if (currentUser.isPremium) {
+        questions = await _hiveService.getQuestions(categoryId, topicId, setId);
       }
       else {
-        return await _firebaseService.getQuestions(categoryId, topicId, setId);
+        questions = await _firebaseService.getQuestions(categoryId, topicId, setId);
+        if (questions.length > 4) questions = questions.sublist(0, 4);
       }
-    } catch (e) {
+      return questions;
+    }
+    catch (e) {
       print("Error fetching questions: $e");
       return []; // Return empty list on failure
     }

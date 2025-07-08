@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/topic.dart';
 import '../models/set.dart';
 import '../models/question.dart';
@@ -11,7 +10,7 @@ class HiveService {
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void> ensureLocalData() async {
+  Future<void> ensureLocalQuizData() async {
     final box = await Hive.openBox<Map>(_boxName);
 
     if (box.isEmpty) {
@@ -278,6 +277,8 @@ class HiveService {
     }
   }
 
+
+
   Future<List<Topic>> getTopics(String categoryId) async {
     final box = await Hive.openBox<Map>(_boxName);
     final categoryMap = box.get(categoryId.toLowerCase());
@@ -287,10 +288,7 @@ class HiveService {
     return topicsMap.values.map((e) => e['topic'] as Topic).toList();
   }
 
-  Future<List<Set>> getSets(String categoryId, String topicId) async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> clearedSetsIds = prefs.getStringList("passed_quizzes") ?? [];
-
+  Future<List<Set>> getSets(String categoryId, String topicId, List<String> passedQuizzes) async {
     final box = await Hive.openBox<Map>(_boxName);
     final categoryMap = box.get(categoryId.toLowerCase());
     if (categoryMap == null) return [];
@@ -303,7 +301,7 @@ class HiveService {
       List<Set> setsOpened = [];
       for (final entry in mockSetsMap.entries) {
         final setId = entry.key.toString();
-        if (clearedSetsIds.contains(setId)) {
+        if (passedQuizzes.contains(setId)) {
           setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
         } else {
           setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
@@ -322,7 +320,7 @@ class HiveService {
       List<Set> setsOpened = [];
       for (final entry in setsMap.entries) {
         final setId = entry.key.toString();
-        if (clearedSetsIds.contains(setId)) {
+        if (passedQuizzes.contains(setId)) {
           setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
         } else {
           setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
@@ -389,6 +387,7 @@ class HiveService {
     return result;
   }
 
+  // Function specifically for debugging
   Future<void> printLocalDataSummary() async {
     final box = await Hive.openBox<Map>(_boxName);
 

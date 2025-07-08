@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/topic.dart';
 import '../../../data/services/navigation_service.dart';
+import '../../../utils/dialog.dart';
 import '../../../utils/themes.dart';
 import '../../../view_model/topic_viewmodel.dart';
+import '../../../view_model/user_viewmodel.dart';
 
 class PracticeTopicsScreen extends StatelessWidget {
   final String categoryId;
@@ -13,6 +15,7 @@ class PracticeTopicsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topicVM = Provider.of<TopicViewModel>(context);
+    final userVM = Provider.of<UserViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,15 +42,21 @@ class PracticeTopicsScreen extends StatelessWidget {
                 ),
                 child: InkWell(
                   onTap: () {
-                    // Navigate to quiz for this topic
-                    NavigationService.navigateTo(
-                      '/sets',
-                      arguments: {
-                        'categoryId': categoryId,
-                        'topicId': topic.id,
-                        'isMock': false,
-                      },
-                    );
+                    if (userVM.allowTopicAccess(categoryId, topic.id)) {
+                      // Navigate to quiz for this topic
+                      NavigationService.navigateTo(
+                        '/sets',
+                        arguments: {
+                          'categoryId': categoryId,
+                          'topicId': topic.id,
+                          'isMock': false,
+                        },
+                      );
+                    }
+                    else {
+                      // Show a message that the user is not allowed to access this topic
+                      Dialogs.snackBar(context, 'You have access to 2 topics only.\nUpgrade to premium to access more topics.');
+                    }
                   },
                   child: Container(
                     decoration: gradientBackground,

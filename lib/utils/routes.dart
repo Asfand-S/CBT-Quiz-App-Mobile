@@ -1,5 +1,5 @@
 import 'package:cbt_quiz_android/data/models/question.dart';
-import 'package:cbt_quiz_android/view/screens/quiz_screens/aboutus.dart';
+import 'package:cbt_quiz_android/view/screens/utility_screens/aboutus_screen.dart';
 import 'package:flutter/material.dart';
 import '../view/screens/quiz_screens/bookmarked_question_screen.dart';
 import '../view/screens/quiz_screens/sets_screen.dart';
@@ -22,8 +22,6 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => PremiumScreen());
     case '/aboutus':
       return MaterialPageRoute(builder: (_) => AboutUsPage());
-    // case '/login':
-    //   return MaterialPageRoute(builder: (_) => LoginPage());
 
     case '/bookmarks':
       final args = settings.arguments as String;

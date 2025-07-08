@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import '../data/models/question.dart';
+import '../data/models/custom_user.dart';
+import 'user_viewmodel.dart';
 
 class QuizViewModel extends ChangeNotifier {
+  late UserViewModel _userViewModel;
+
+  void setUserViewModel(UserViewModel userVM) {
+    _userViewModel = userVM;
+  }
+
+  CustomUserModel get currentUser => _userViewModel.currentUser;
   late List<Question> _questions;
   int _currentIndex = 0;
   int _score = 0;
