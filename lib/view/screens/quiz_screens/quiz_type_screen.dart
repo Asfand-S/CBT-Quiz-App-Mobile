@@ -1,16 +1,12 @@
-import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../data/services/navigation_service.dart';
-import '../../../data/services/firebase_service.dart';
 import '../../../utils/themes.dart';
 import '../../../view_model/user_viewmodel.dart';
-import '../../../utils/dialog.dart';
-import '../utility_screens/payment_screen.dart';
-import 'home_screen.dart';
 
 class QuizTypeScreen extends StatefulWidget {
   final String categoryId;
@@ -25,94 +21,89 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
   @override
   void initState() {
     super.initState();
-    _initialize();
+    initPurchaseListener();
   }
 
   final InAppPurchase _iap = InAppPurchase.instance;
-  late Stream<List<PurchaseDetails>> _subscription;
   ProductDetails? _product;
   final String _productId = 'com.cbt.quizapp.questions';
+  late final StreamSubscription<List<PurchaseDetails>> _subscription;
 
-  void googleSignInButton() async {
-    Dialogs.showProgressBar(context);
-    signInWithGoogle().then((user) async {
-      if (user != null) {
-        Navigator.pop(context);
-        if (await FirebaseService.userExist()) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PremiumScreen()),
-          );
-        } else {
-          FirebaseService.createUser().then(
-            (onValue) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            ),
-          );
-          NavigationService.navigateTo(
-            '/premium',
-          );
+  void initPurchaseListener() {
+    final purchaseUpdated = _iap.purchaseStream;
+    _subscription = purchaseUpdated.listen((purchases) {
+      for (var purchase in purchases) {
+        if (purchase.status == PurchaseStatus.purchased) {
+          final userVM = Provider.of<UserViewModel>(context, listen: false);
+          userVM.updateUserData("isPremium", true);
+          print('🎉 Premium Purchased Successfully');
+        } else if (purchase.status == PurchaseStatus.error) {
+          print('❌ Purchase Error: ${purchase.error}');
         }
       }
     });
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
+  Future<void> loginWithGoogleAndSaveToFirestore() async {
     try {
-      await InternetAddress.lookup("google.com");
-      // Trigger the authentication flow
+      // Trigger Google Sign-In flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // Sign-in aborted by user
+        return;
+      }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } catch (e) {
-      print("Error $e");
-    }
-    return null;
-  }
+      // Sign in with Firebase
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = userCredential.user;
 
-  // premium functionalities
-  Future<void> _initialize() async {
-    bool available = await _iap.isAvailable();
-    if (available) {
-      ProductDetailsResponse response =
-          await _iap.queryProductDetails({_productId});
-      if (response.productDetails.isNotEmpty) {
-        setState(() {
-          _product = response.productDetails.first;
-        });
-      }
-      _subscription = _iap.purchaseStream;
-      _subscription.listen(_handlePurchase);
-    }
-    setState(() {});
-  }
-
-  Future<void> _handlePurchase(List<PurchaseDetails> purchases) async {
-    final userVM = Provider.of<UserViewModel>(context, listen: false);
-    for (var purchase in purchases) {
-      if (purchase.status == PurchaseStatus.purchased) {
+      if (user != null) {
+        // Save user info to Firestore
+        final userVM = Provider.of<UserViewModel>(context, listen: false);
+        await userVM.updateUserData("email", user.email);
         await userVM.updateUserData("isPremium", true);
-        _iap.completePurchase(purchase);
-      } else if (purchase.status == PurchaseStatus.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text("Purchase failed: ${purchase.error?.message ?? ''}")),
-        );
+        // await purchasePremium();
+      } else {
+        return;
       }
+    } catch (e) {
+      print('Login failed: $e');
+      return;
     }
+  }
+
+  Future<void> purchasePremium() async {
+    final bool available = await _iap.isAvailable();
+
+    if (!available) {
+      print('IAP not available');
+      return;
+    }
+
+    // Get product details
+    ProductDetailsResponse response =
+        await _iap.queryProductDetails({_productId});
+    if (response.productDetails.isEmpty) {
+      print('Product not found');
+      return;
+    }
+
+    final ProductDetails product = response.productDetails.first;
+
+    // Buy the product
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override
@@ -223,7 +214,8 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
             const SizedBox(height: 24),
             Consumer<UserViewModel>(
               builder: (context, userViewModel, _) {
-                if (userViewModel.currentUser.isPremium) return const SizedBox.shrink();
+                if (userViewModel.currentUser.isPremium)
+                  return const SizedBox.shrink();
 
                 return ElevatedButton.icon(
                   icon:
@@ -232,8 +224,8 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                     'Get Premium',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
-                  onPressed: () {
-                    googleSignInButton();
+                  onPressed: () async {
+                    loginWithGoogleAndSaveToFirestore();
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 60),

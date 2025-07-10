@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "509723349571-glhgl4e0qr8a8rch73vj4l0v2fd866lq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cbt.quizapp",
+            "certificate_hash": "743eec15e1bd354970a330f0366ef99cc7d732c6"
+          }
+        },
+        {
+          "client_id": "509723349571-t22nrj8avgoj8j903cgcnibv43hbpg7i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cbt.quizapp",
+            "certificate_hash": "fc2c89000059a4407e9ac1616ee830df3634fdfb"
+          }
+        },
+        {
           "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +45,13 @@
             {
               "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "509723349571-uufv44hhbg0f6bn9c8p5bsm6j396atk1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cbtQuizAndroid"
+              }
             }
           ]
         }

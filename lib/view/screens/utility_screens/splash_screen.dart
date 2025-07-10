@@ -2,7 +2,6 @@ import 'package:cbt_quiz_android/utils/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/navigation_service.dart';
-import '../../../data/services/firebase_service.dart';
 import '../../../view_model/user_viewmodel.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,22 +20,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void userCheck() async {
-    if (await FirebaseService.userExist()) {
-      await Future.delayed(Duration(seconds: 2), () {
-        NavigationService.pushReplacement('/home');
-      });
-    } else {
-      await Future.delayed(Duration(seconds: 2), () {
-        NavigationService.pushReplacement('/home');
-      });
-    }
+    await Future.delayed(Duration(seconds: 2), () {
+      NavigationService.pushReplacement('/home');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("QUIZ APP",
+        child: Text("Nursing CBT NG",
             style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: myTealShade)),
       ),
     );

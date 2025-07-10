@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../../../data/models/question.dart';
 import '../../../utils/themes.dart';
+import '../../../view_model/user_viewmodel.dart';
 
 class QuestionScreen extends StatelessWidget {
   final Question question;
@@ -30,10 +31,10 @@ class QuestionScreen extends StatelessWidget {
 
     if (result != true) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    List<String> bookmarks = prefs.getStringList('bookmarks') ?? [];
+    final userVM = Provider.of<UserViewModel>(context, listen: false);
+    var bookmarks = userVM.currentUser.bookmarks;
     bookmarks.remove(questionId);
-    await prefs.setStringList('bookmarks', bookmarks);
+    userVM.updateUserData("bookmarks", bookmarks);
 
     Navigator.pop(context, true);
   }

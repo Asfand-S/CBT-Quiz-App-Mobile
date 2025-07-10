@@ -351,7 +351,7 @@ class HiveService {
     }
   }
 
-  Future<List<Question>> getBookmarkedQuestions(
+  Future<List<Question>> getBookmarkedQuestions1(
       List<String> bookmarkedIds) async {
     final box = await Hive.openBox<Map>(_boxName);
     final List<Question> result = [];
@@ -385,6 +385,51 @@ class HiveService {
     }
 
     return result;
+  }
+
+  Future<List<Question>> getBookmarkedQuestions(
+    String categoryId,
+    List<String> bookmarks,
+  ) async {
+    print("${DateTime.now()}");
+    final List<Question> bookmarkedQuestions = [];
+
+    final box = await Hive.openBox<Map>(_boxName); // use your _boxName
+
+    // Check if the category exists in local storage
+    final categoryData = box.get(categoryId);
+    if (categoryData == null) return bookmarkedQuestions;
+
+    final topics = categoryData['topics'] as Map?;
+
+    if (topics == null) return bookmarkedQuestions;
+
+    // Loop through all topics
+    for (final topicEntry in topics.entries) {
+      final topicMap = topicEntry.value as Map?;
+      final sets = topicMap?['sets'] as Map?;
+
+      if (sets == null) continue;
+
+      // Loop through all sets in topic
+      for (final setEntry in sets.entries) {
+        final setMap = setEntry.value as Map?;
+        final questions = setMap?['questions'] as List?;
+
+        if (questions == null) continue;
+
+        // Loop through all questions in this set
+        for (final q in questions) {
+          final question = q as Question;
+          if (bookmarks.contains(question.id)) {
+            bookmarkedQuestions.add(question);
+          }
+        }
+      }
+    }
+
+    print("${DateTime.now()} - ${bookmarks.length}");
+    return bookmarkedQuestions;
   }
 
   // Function specifically for debugging

@@ -123,8 +123,21 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _bookmarkQuestion() async {
     final userVM = Provider.of<UserViewModel>(context, listen: false);
-    final String message =
-        await userVM.addBookmark(_questions[_currentIndex].id);
+    List<String> bookmarks = userVM.currentUser.bookmarks;
+    String message = "";
+
+    final questionId = _questions[_currentIndex].id;
+    if (bookmarks.contains(questionId)) {
+      message = "Question already bookmarked.";
+    }
+    else if (!(userVM.currentUser.isPremium) && bookmarks.length >= 5) {
+      message = "You can only bookmark 5 questions.";
+    }
+    else {
+      bookmarks.add(questionId);
+      await userVM.updateUserData("bookmarks", bookmarks);
+      message = "Bookmark added successfully.";
+    }
 
     Dialogs.snackBar(context, message);
   }

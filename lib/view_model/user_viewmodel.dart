@@ -45,8 +45,27 @@ class UserViewModel extends ChangeNotifier {
     final isPremium = await isCurrentUserPremium();
     if (isPremium && !_isOnline) {
       return await getUserProfileFromSharedPrefs(userId);
-    } else {
-      return await _firebaseService.getUserProfileFromFirebase(userId);
+    }
+    else {
+      final user = await _firebaseService.getUserProfileFromFirebase(userId);
+      updateSharedPrefsProfile(user);
+      return user;
+    }
+  }
+
+  Future<void> updateSharedPrefsProfile(CustomUserModel user) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // If first time app run
+    if (!prefs.containsKey('userId')) {
+      await prefs.setString('userId', user.id);
+      await prefs.setBool('isPremium', user.isPremium);
+      await prefs.setStringList('bookmarks', user.bookmarks);
+      await prefs.setStringList('passedQuizzes', user.passedQuizzes);
+      await prefs.setStringList('unlockedTopicsNursing', user.unlockedTopicsNursing);
+      await prefs.setStringList('unlockedTopicsMidwifery', user.unlockedTopicsMidwifery);
+      await prefs.setString('lastActive', user.lastActive!);
+      await prefs.setString('email', user.email);
     }
   }
 
@@ -59,6 +78,7 @@ class UserViewModel extends ChangeNotifier {
     List<String> unlockedTopicsNursing = [];
     List<String> unlockedTopicsMidwifery = [];
     String lastActive = "0";
+    String email = "";
 
     // If first time app run
     if (!prefs.containsKey('userId')) {
@@ -69,6 +89,7 @@ class UserViewModel extends ChangeNotifier {
       await prefs.setStringList('unlockedTopicsNursing', unlockedTopicsNursing);
       await prefs.setStringList('unlockedTopicsMidwifery', unlockedTopicsMidwifery);
       await prefs.setString('lastActive', lastActive);
+      await prefs.setString('email', email);
     } else {
       isPremium = prefs.getBool('isPremium') ?? false;
       bookmarks = prefs.getStringList('bookmarks') ?? [];
@@ -76,6 +97,7 @@ class UserViewModel extends ChangeNotifier {
       unlockedTopicsNursing = prefs.getStringList('unlockedTopicsNursing') ?? [];
       unlockedTopicsMidwifery = prefs.getStringList('unlockedTopicsMidwifery') ?? [];
       lastActive = prefs.getString('lastActive') ?? "";
+      email = prefs.getString('email') ?? "";
     }
 
     CustomUserModel user = CustomUserModel.fromMap({
@@ -85,7 +107,7 @@ class UserViewModel extends ChangeNotifier {
       'passedQuizzes': passedQuizzes,
       'unlockedTopicsNursing': unlockedTopicsNursing,
       'unlockedTopicsMidwifery': unlockedTopicsMidwifery,
-      'email': '',
+      'email': email,
       'createdAt': '',
       'lastActive': lastActive,
     });
@@ -156,6 +178,9 @@ class UserViewModel extends ChangeNotifier {
         case 'lastActive':
           await prefs.setString('lastActive', value);
           break;
+        case 'email':
+          await prefs.setString('email', value);
+          break;
         default:
           break;
       }
@@ -190,28 +215,16 @@ class UserViewModel extends ChangeNotifier {
     return true;
   }
 
-  Future<String> addBookmark(String questionId) async {
-    List<String> bookmarks = currentUser.bookmarks;
-
-    if (bookmarks.contains(questionId)) {
-      return "Question already bookmarked.";
-    }
-     else if (!(currentUser.isPremium) && bookmarks.length >= 5) {
-      return "You can only bookmark 5 questions.";
-    }
-     else {
-      updateUserData("bookmarks", bookmarks);
-      notifyListeners();
-      return "Bookmark added successfully.";
-    }
-  }
-
   Future<List<Question?>> getBookmarkedQuestions(String categoryId) async {
     final bookmarks = currentUser.bookmarks;
 
     if (bookmarks.isEmpty) {
       return [];
-    } else {
+    }
+    else  if (currentUser.isPremium) {
+      return await _hiveService.getBookmarkedQuestions(categoryId, bookmarks);
+    }
+    else {
       return await _firebaseService.getBookmarkedQuestions(categoryId, bookmarks);
     }
   }

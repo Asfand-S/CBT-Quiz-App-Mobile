@@ -1,4 +1,3 @@
-import 'package:cbt_quiz_android/data/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/topic.dart';
@@ -11,39 +10,6 @@ class FirebaseService {
   static FirebaseFirestore _db = FirebaseFirestore.instance;
 
   static User? get user => auth.currentUser;
-
-  static Future<bool> userExist() async {
-    final currentUser = auth.currentUser;
-
-    if (currentUser == null) return false;
-
-    final doc = await _db.collection("users").doc(currentUser.uid).get();
-    return doc.exists;
-  }
-
-  static Future<void> createUser() async {
-    final currentUser = auth.currentUser;
-    if (currentUser == null) return;
-
-    final time = DateTime.now().millisecondsSinceEpoch.toString();
-    final chatUser = UserModel(
-      image: currentUser.photoURL ?? '',
-      name: currentUser.displayName ?? '',
-      about: "Hey I am using Happy Chat",
-      createdAt: time,
-      lastActive: time,
-      id: currentUser.uid,
-      email: currentUser.email ?? '',
-      isPremium: false,
-      bookmarks: [],
-    );
-    return await _db
-        .collection("users")
-        .doc(currentUser.uid)
-        .set(chatUser.toMap());
-  }
-
-
 
   Future<List<Topic>> getTopics(String categoryId) async {
     final query = await _db

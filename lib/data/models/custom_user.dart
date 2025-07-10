@@ -1,6 +1,6 @@
 class CustomUserModel {
   final String id;
-  final String email;
+  String email;
   bool isPremium;
   List<String> bookmarks;
   List<String> passedQuizzes;
@@ -71,6 +71,9 @@ class CustomUserModel {
         break;
       case 'lastActive':
         lastActive = value;
+        break;
+      case 'email':
+        email = value;
         break;
       default:
         break;
