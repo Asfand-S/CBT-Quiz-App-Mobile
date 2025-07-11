@@ -73,7 +73,7 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
         final userVM = Provider.of<UserViewModel>(context, listen: false);
         await userVM.updateUserData("email", user.email);
         await userVM.updateUserData("isPremium", true);
-        // await purchasePremium();
+        await purchasePremium();
       } else {
         return;
       }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/question.dart';
@@ -34,18 +35,49 @@ class _QuizScreenState extends State<QuizScreen> {
   int _score = 0;
   int? _selectedIndex; // Track the selected answer
   late DateTime _startTime;
+  Timer? _quizTimer;
+  Duration _remainingTime = Duration(minutes: 20);
 
   @override
   void initState() {
     super.initState();
     _startTime = DateTime.now();
     _loadQuestions();
+
+    if (widget.isMock) {
+      _startQuizTimer();
+    }
+  }
+
+  void _startQuizTimer() {
+    _quizTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _remainingTime = _remainingTime - Duration(seconds: 1);
+
+        if (_remainingTime.inSeconds <= 0) {
+          timer.cancel();
+          final duration = DateTime.now().difference(_startTime);
+
+          // Navigate to completion and clear backstack
+          NavigationService.navigateTo(
+            '/complete',
+            arguments: {
+              'score': _score,
+              'total': _questions.length,
+              'timeTaken': duration,
+              'setId': widget.setId,
+            },
+          );
+        }
+      });
+    });
   }
 
   Future<void> _loadQuestions() async {
     final qVM = Provider.of<QuestionViewModel>(context, listen: false);
 
-    List<Question> fetched = await qVM.fetchQuestions(widget.categoryId, widget.topicId, widget.setId);
+    List<Question> fetched = await qVM.fetchQuestions(
+        widget.categoryId, widget.topicId, widget.setId);
 
     setState(() {
       _questions = fetched;
@@ -129,17 +161,23 @@ class _QuizScreenState extends State<QuizScreen> {
     final questionId = _questions[_currentIndex].id;
     if (bookmarks.contains(questionId)) {
       message = "Question already bookmarked.";
-    }
-    else if (!(userVM.currentUser.isPremium) && bookmarks.length >= 5) {
+    } else if (!(userVM.currentUser.isPremium) && bookmarks.length >= 5) {
       message = "You can only bookmark 5 questions.";
-    }
-    else {
+    } else {
       bookmarks.add(questionId);
       await userVM.updateUserData("bookmarks", bookmarks);
       message = "Bookmark added successfully.";
     }
 
     Dialogs.snackBar(context, message);
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$hours:$minutes:$seconds";
   }
 
   @override
@@ -178,17 +216,19 @@ class _QuizScreenState extends State<QuizScreen> {
           title: Text(
             widget.isMock ? "Mock Quiz" : "Practice - ${widget.setName}",
           ),
-          actions: widget.isMock ? [] : [
-            IconButton(
-              icon: const Icon(
-                Icons.bookmark,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                await _bookmarkQuestion();
-              },
-            )
-          ],
+          actions: widget.isMock
+              ? []
+              : [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.bookmark,
+                      color: Colors.white,
+                    ),
+                    onPressed: () async {
+                      await _bookmarkQuestion();
+                    },
+                  )
+                ],
         ),
         body: Column(
           children: [
@@ -198,11 +238,25 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Q${_currentIndex + 1}/${_questions.length}",
-                        style: const TextStyle(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Q${_currentIndex + 1}/${_questions.length}",
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey)),
+                        // Right: Timer display
+                        Text(
+                          _formatDuration(_remainingTime),
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey)),
+                            color: Colors.teal,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.all(10),
@@ -228,7 +282,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           buttonColor = Colors.red.shade600; // Incorrect answer
                         }
                       }
-                
+
                       return Container(
                         width: double.infinity,
                         margin: const EdgeInsets.only(bottom: 10),
@@ -260,8 +314,8 @@ class _QuizScreenState extends State<QuizScreen> {
                     if (!widget.isMock && _selectedIndex != null) ...[
                       SizedBox(height: 10),
                       Text("Explanation",
-                          style:
-                              TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
                       Text(q.explanation, style: TextStyle(fontSize: 16)),
                     ],
                   ],
@@ -301,5 +355,11 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _quizTimer?.cancel();
+    super.dispose();
   }
 }
