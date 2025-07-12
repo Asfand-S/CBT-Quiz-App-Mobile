@@ -162,7 +162,7 @@ class _QuizScreenState extends State<QuizScreen> {
     if (bookmarks.contains(questionId)) {
       message = "Question already bookmarked.";
     } else if (!(userVM.currentUser.isPremium) && bookmarks.length >= 5) {
-      message = "You can only bookmark 5 questions.";
+      message = "Free users can only bookmark 5 questions.\nGet Premium to bookmark unlimited questions.";
     } else {
       bookmarks.add(questionId);
       await userVM.updateUserData("bookmarks", bookmarks);
@@ -247,14 +247,16 @@ class _QuizScreenState extends State<QuizScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey)),
                         // Right: Timer display
-                        Text(
-                          _formatDuration(_remainingTime),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.teal,
+                        if (widget.isMock) ...[
+                          Text(
+                            _formatDuration(_remainingTime),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal,
+                            ),
                           ),
-                        ),
+                        ]
                       ],
                     ),
                     const SizedBox(height: 10),

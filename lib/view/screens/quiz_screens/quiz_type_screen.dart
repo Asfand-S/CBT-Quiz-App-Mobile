@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../../data/services/navigation_service.dart';
+import '../../../utils/dialog.dart';
 import '../../../utils/themes.dart';
 import '../../../view_model/user_viewmodel.dart';
 
@@ -25,7 +26,7 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
   }
 
   final InAppPurchase _iap = InAppPurchase.instance;
-  ProductDetails? _product;
+  late ProductDetails product;
   final String _productId = 'com.cbt.quizapp.questions';
   late final StreamSubscription<List<PurchaseDetails>> _subscription;
 
@@ -36,8 +37,9 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
         if (purchase.status == PurchaseStatus.purchased) {
           final userVM = Provider.of<UserViewModel>(context, listen: false);
           userVM.updateUserData("isPremium", true);
-          print('🎉 Premium Purchased Successfully');
+          Dialogs.snackBar(context, 'Premium Purchased Successfully');
         } else if (purchase.status == PurchaseStatus.error) {
+          Dialogs.snackBar(context, 'Purchase Error');
           print('❌ Purchase Error: ${purchase.error}');
         }
       }
@@ -49,6 +51,7 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
       // Trigger Google Sign-In flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
+        Dialogs.snackBar(context, 'Google user not selected');
         // Sign-in aborted by user
         return;
       }
@@ -69,15 +72,18 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
       final user = userCredential.user;
 
       if (user != null) {
+        Dialogs.snackBar(context, 'Firebase Login Successful');
         // Save user info to Firestore
         final userVM = Provider.of<UserViewModel>(context, listen: false);
         await userVM.updateUserData("email", user.email);
-        await userVM.updateUserData("isPremium", true);
+        // await userVM.updateUserData("isPremium", true);
         await purchasePremium();
       } else {
+          Dialogs.snackBar(context, 'Firebase Login Failed');
         return;
       }
     } catch (e) {
+      Dialogs.snackBar(context, 'Firebase Login Exception $e');
       print('Login failed: $e');
       return;
     }
@@ -99,7 +105,8 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
       return;
     }
 
-    final ProductDetails product = response.productDetails.first;
+    setState(() => product = response.productDetails.first,);
+    product = response.productDetails.first;
 
     // Buy the product
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
