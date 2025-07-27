@@ -277,8 +277,6 @@ class HiveService {
     }
   }
 
-
-
   Future<List<Topic>> getTopics(String categoryId) async {
     final box = await Hive.openBox<Map>(_boxName);
     final categoryMap = box.get(categoryId.toLowerCase());
@@ -288,7 +286,8 @@ class HiveService {
     return topicsMap.values.map((e) => e['topic'] as Topic).toList();
   }
 
-  Future<List<Set>> getSets(String categoryId, String topicId, List<String> passedQuizzes) async {
+  Future<List<Set>> getSets(
+      String categoryId, String topicId, List<String> passedQuizzes) async {
     final box = await Hive.openBox<Map>(_boxName);
     final categoryMap = box.get(categoryId.toLowerCase());
     if (categoryMap == null) return [];
@@ -352,57 +351,24 @@ class HiveService {
   }
 
   Future<List<Question>> getBookmarkedQuestions1(
-      List<String> bookmarkedIds) async {
-    final box = await Hive.openBox<Map>(_boxName);
-    final List<Question> result = [];
-    final bookmarkedSet = bookmarkedIds.toSet(); // Faster lookup
-
-    for (final categoryMap in box.values) {
-      // 1. Go through topics
-      final topicsMap = (categoryMap['topics'] ?? {}) as Map;
-      for (final topic in topicsMap.values) {
-        final sets = (topic['sets'] ?? {}) as Map;
-        for (final set in sets.values) {
-          final questions = (set['questions'] ?? []) as List<Question>;
-          for (final q in questions) {
-            if (bookmarkedSet.contains(q.id)) {
-              result.add(q);
-            }
-          }
-        }
-      }
-
-      // 2. Go through mock sets
-      final mockSetsMap = (categoryMap['mock_sets'] ?? {}) as Map;
-      for (final set in mockSetsMap.values) {
-        final questions = (set['questions'] ?? []) as List<Question>;
-        for (final q in questions) {
-          if (bookmarkedSet.contains(q.id)) {
-            result.add(q);
-          }
-        }
-      }
-    }
-
-    return result;
-  }
-
-  Future<List<Question>> getBookmarkedQuestions(
     String categoryId,
     List<String> bookmarks,
   ) async {
-    print("${DateTime.now()}");
+    print("${bookmarks}");
     final List<Question> bookmarkedQuestions = [];
 
     final box = await Hive.openBox<Map>(_boxName); // use your _boxName
 
     // Check if the category exists in local storage
     final categoryData = box.get(categoryId);
+    print("1");
     if (categoryData == null) return bookmarkedQuestions;
+    print("2");
 
     final topics = categoryData['topics'] as Map?;
 
     if (topics == null) return bookmarkedQuestions;
+    print("3");
 
     // Loop through all topics
     for (final topicEntry in topics.entries) {
@@ -421,6 +387,7 @@ class HiveService {
         // Loop through all questions in this set
         for (final q in questions) {
           final question = q as Question;
+          print(question.id);
           if (bookmarks.contains(question.id)) {
             bookmarkedQuestions.add(question);
           }
@@ -428,7 +395,82 @@ class HiveService {
       }
     }
 
-    print("${DateTime.now()} - ${bookmarks.length}");
+    // === MOCK QUIZZES ===
+    final mockSets = categoryData['mock_sets'] as Map?;
+    if (mockSets != null) {
+      for (final mockEntry in mockSets.entries) {
+        final mockSetMap = mockEntry.value as Map?;
+        final questions = mockSetMap?['questions'] as List?;
+
+        if (questions == null) continue;
+
+        for (final q in questions) {
+          final question = q as Question;
+          if (bookmarks.contains(question.id)) {
+            bookmarkedQuestions.add(question);
+          }
+        }
+      }
+    }
+
+    return bookmarkedQuestions;
+  }
+
+  Future<List<Question>> getBookmarkedQuestions(
+    String categoryId,
+    List<String> bookmarks,
+  ) async {
+    final List<Question> bookmarkedQuestions = [];
+
+    final box = await Hive.openBox<Map>(_boxName); // use your _boxName
+
+    // Check if the category exists in local storage
+    final categoryData = box.get(categoryId.toLowerCase());
+    if (categoryData == null) return bookmarkedQuestions;
+
+    // === PRACTICE QUIZZES ===
+    final topics = categoryData['topics'] as Map?;
+    if (topics != null) {
+      for (final topicEntry in topics.entries) {
+        final topicMap = topicEntry.value as Map?;
+        final sets = topicMap?['sets'] as Map?;
+
+        if (sets == null) continue;
+
+        for (final setEntry in sets.entries) {
+          final setMap = setEntry.value as Map?;
+          final questions = setMap?['questions'] as List?;
+
+          if (questions == null) continue;
+
+          for (final q in questions) {
+            final question = q as Question;
+            if (bookmarks.contains(question.id)) {
+              bookmarkedQuestions.add(question);
+            }
+          }
+        }
+      }
+    }
+
+    // === MOCK QUIZZES ===
+    final mockSets = categoryData['mock_sets'] as Map?;
+    if (mockSets != null) {
+      for (final mockEntry in mockSets.entries) {
+        final mockSetMap = mockEntry.value as Map?;
+        final questions = mockSetMap?['questions'] as List?;
+
+        if (questions == null) continue;
+
+        for (final q in questions) {
+          final question = q as Question;
+          if (bookmarks.contains(question.id)) {
+            bookmarkedQuestions.add(question);
+          }
+        }
+      }
+    }
+
     return bookmarkedQuestions;
   }
 

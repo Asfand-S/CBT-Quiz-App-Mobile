@@ -221,7 +221,7 @@ class UserViewModel extends ChangeNotifier {
     if (bookmarks.isEmpty) {
       return [];
     }
-    else  if (currentUser.isPremium) {
+    else if (currentUser.isPremium) {
       return await _hiveService.getBookmarkedQuestions(categoryId, bookmarks);
     }
     else {

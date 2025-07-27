@@ -162,7 +162,8 @@ class _QuizScreenState extends State<QuizScreen> {
     if (bookmarks.contains(questionId)) {
       message = "Question already bookmarked.";
     } else if (!(userVM.currentUser.isPremium) && bookmarks.length >= 5) {
-      message = "Free users can only bookmark 5 questions.\nGet Premium to bookmark unlimited questions.";
+      message =
+          "Free users can only bookmark 5 questions.\nGet Premium to bookmark unlimited questions.";
     } else {
       bookmarks.add(questionId);
       await userVM.updateUserData("bookmarks", bookmarks);
@@ -216,19 +217,17 @@ class _QuizScreenState extends State<QuizScreen> {
           title: Text(
             widget.isMock ? "Mock Quiz" : "Practice - ${widget.setName}",
           ),
-          actions: widget.isMock
-              ? []
-              : [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.bookmark,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      await _bookmarkQuestion();
-                    },
-                  )
-                ],
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.bookmark,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                await _bookmarkQuestion();
+              },
+            )
+          ],
         ),
         body: Column(
           children: [

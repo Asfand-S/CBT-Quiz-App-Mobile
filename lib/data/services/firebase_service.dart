@@ -20,7 +20,8 @@ class FirebaseService {
     return query.docs.map((doc) => Topic.fromMap(doc.id, doc.data())).toList();
   }
 
-  Future<List<Set>> getSets(String categoryId, String topicId, List<String> passedQuizzes) async {
+  Future<List<Set>> getSets(
+      String categoryId, String topicId, List<String> passedQuizzes) async {
     QuerySnapshot<Map<String, dynamic>> query;
 
     if (topicId == "") {
@@ -40,13 +41,12 @@ class FirebaseService {
           .orderBy('createdAt')
           .get();
     }
-    
+
     List<Set> setsOpened = [];
     for (var doc in query.docs) {
       if (passedQuizzes.contains(doc.id)) {
         setsOpened.add(Set.fromMap(doc.id, doc.data()));
-      }
-      else {
+      } else {
         setsOpened.add(Set.fromMap(doc.id, doc.data()));
         break;
       }
@@ -95,7 +95,8 @@ class FirebaseService {
   ) async {
     final List<Question> bookmarkedQuestions = [];
 
-    final categoryRef = _db.collection('categories').doc(categoryId.toLowerCase());
+    final categoryRef =
+        _db.collection('categories').doc(categoryId.toLowerCase());
 
     // Step 1: Get all topics
     final topicsSnapshot = await categoryRef.collection('topics').get();
@@ -104,7 +105,11 @@ class FirebaseService {
       final topicId = topicDoc.id;
 
       // Step 2: Get all sets in this topic
-      final setsSnapshot = await categoryRef.collection('topics').doc(topicId).collection('sets').get();
+      final setsSnapshot = await categoryRef
+          .collection('topics')
+          .doc(topicId)
+          .collection('sets')
+          .get();
 
       for (final setDoc in setsSnapshot.docs) {
         final setId = setDoc.id;
@@ -129,20 +134,41 @@ class FirebaseService {
       }
     }
 
+    // Step 1: Get all mock sets
+    final mockSetsSnapshot = await categoryRef.collection('mock_sets').get();
+
+    for (final setDoc in mockSetsSnapshot.docs) {
+      final setId = setDoc.id;
+
+      // Step 3: Get all questions in this set
+      final questionsSnapshot = await categoryRef
+          .collection('mock_sets')
+          .doc(setId)
+          .collection('questions')
+          .get();
+
+      for (final questionDoc in questionsSnapshot.docs) {
+        final questionData = questionDoc.data();
+        final questionId = questionDoc.id;
+
+        if (bookmarks.contains(questionId)) {
+          bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
+        }
+      }
+    }
+
     return bookmarkedQuestions;
   }
-
-
 
   // New functions for Managing User Profile
   Future<CustomUserModel> getUserProfileFromFirebase(String userId) async {
     final doc = await _db.collection("users").doc(userId).get();
     if (doc.exists && doc.data() != null) {
       final docRef = _db.collection("users").doc(userId);
-      docRef.update({'lastActive': DateTime.now().millisecondsSinceEpoch.toString()});
+      docRef.update(
+          {'lastActive': DateTime.now().millisecondsSinceEpoch.toString()});
       return CustomUserModel.fromMap(doc.data()!);
-    } 
-    else {
+    } else {
       // Create User
       final docRef = _db.collection("users").doc(userId);
       CustomUserModel user = CustomUserModel.fromMap({
@@ -161,15 +187,29 @@ class FirebaseService {
     }
   }
 
-  Future<bool> updateUserData(String userId, String field, dynamic value) async {
+  Future<bool> updateUserData(
+      String userId, String field, dynamic value) async {
     try {
-      await _db
-        .collection('users')
-        .doc(userId)
-        .update({field: value});
+      await _db.collection('users').doc(userId).update({field: value});
       return true;
     } catch (e) {
       return false;
     }
+  }
+
+  Future<bool> checkIfEmailHasAnotherDeviceID(
+      String email, String deviceID) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    for (var doc in snapshot.docs) {
+      if (doc.id != deviceID) {
+        return true; // Found another device with same email
+      }
+    }
+
+    return false;
   }
 }

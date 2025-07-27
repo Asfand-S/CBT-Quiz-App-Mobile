@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -71,19 +72,26 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
           await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
 
-      if (user != null) {
-        Dialogs.snackBar(context, 'Firebase Login Successful');
-        // Save user info to Firestore
-        final userVM = Provider.of<UserViewModel>(context, listen: false);
-        await userVM.updateUserData("email", user.email);
-        // await userVM.updateUserData("isPremium", true);
-        await purchasePremium();
-      } else {
-          Dialogs.snackBar(context, 'Firebase Login Failed');
+      if (user == null) {
+        Dialogs.snackBar(context, 'Login Failed');
         return;
       }
+
+      // Save user info to Firestore
+      final userVM = Provider.of<UserViewModel>(context, listen: false);
+      final idExists = await FirebaseService()
+          .checkIfEmailHasAnotherDeviceID(user.email!, userVM.currentUser.id);
+      if (idExists) {
+        Dialogs.snackBar(context, 'Email already linked to another device');
+
+        return;
+      }
+
+      await userVM.updateUserData("email", user.email);
+      // await userVM.updateUserData("isPremium", true);
+      await purchasePremium();
     } catch (e) {
-      Dialogs.snackBar(context, 'Firebase Login Exception $e');
+      Dialogs.snackBar(context, 'Login Failed.');
       print('Login failed: $e');
       return;
     }
@@ -105,7 +113,9 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
       return;
     }
 
-    setState(() => product = response.productDetails.first,);
+    setState(
+      () => product = response.productDetails.first,
+    );
     product = response.productDetails.first;
 
     // Buy the product
