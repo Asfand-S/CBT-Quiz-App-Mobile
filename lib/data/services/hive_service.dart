@@ -299,14 +299,21 @@ class HiveService {
       if (mockSetsMap == null) return [];
 
       List<Set> setsOpened = [];
+      // BEFORE
+      // for (final entry in mockSetsMap.entries) {
+      //   final setId = entry.key.toString();
+      //   if (passedQuizzes.contains(setId)) {
+      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+      //   } else {
+      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+      //     break;
+      //   }
+      // }
+
+      // AFTER
       for (final entry in mockSetsMap.entries) {
         final setId = entry.key.toString();
-        if (passedQuizzes.contains(setId)) {
-          setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-        } else {
-          setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-          break;
-        }
+        setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
       }
       return setsOpened;
     } else {
@@ -318,14 +325,21 @@ class HiveService {
       if (setsMap == null) return [];
 
       List<Set> setsOpened = [];
+      // BEFORE - Return only opened sets
+      // for (final entry in setsMap.entries) {
+      //   final setId = entry.key.toString();
+      //   if (passedQuizzes.contains(setId)) {
+      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+      //   } else {
+      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+      //     break;
+      //   }
+      // }
+
+      // AFTER - Return all sets
       for (final entry in setsMap.entries) {
         final setId = entry.key.toString();
-        if (passedQuizzes.contains(setId)) {
-          setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-        } else {
-          setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-          break;
-        }
+        setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
       }
       return setsOpened;
     }

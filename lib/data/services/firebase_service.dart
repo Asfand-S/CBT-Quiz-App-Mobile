@@ -42,14 +42,21 @@ class FirebaseService {
           .get();
     }
 
+    // BEFORE
+    // List<Set> setsOpened = [];
+    // for (var doc in query.docs) {
+    //   if (passedQuizzes.contains(doc.id)) {
+    //     setsOpened.add(Set.fromMap(doc.id, doc.data()));
+    //   } else {
+    //     setsOpened.add(Set.fromMap(doc.id, doc.data()));
+    //     break;
+    //   }
+    // }
+
+    // AFTER
     List<Set> setsOpened = [];
     for (var doc in query.docs) {
-      if (passedQuizzes.contains(doc.id)) {
-        setsOpened.add(Set.fromMap(doc.id, doc.data()));
-      } else {
-        setsOpened.add(Set.fromMap(doc.id, doc.data()));
-        break;
-      }
+      setsOpened.add(Set.fromMap(doc.id, doc.data()));
     }
 
     return setsOpened;
