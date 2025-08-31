@@ -5,13 +5,85 @@ import '../../../view_model/user_viewmodel.dart';
 import '../../../utils/themes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeScreen extends StatelessWidget {
-  final List<String> categories = ['Nursing', 'Midwifery'];
-
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<String> categories = ['Nursing', 'Midwifery'];
+
+  @override
   Widget build(BuildContext context) {
+    // Future<void> openWhatsAppChannel(BuildContext context) async {
+    //   final whatsappSchemeUrl =
+    //       Uri.parse('whatsapp://channel/0029VbAvkqrDuMRlrq24EU2d');
+    //   final webUrl =
+    //       Uri.parse('https://whatsapp.com/channel/0029VbAvkqrDuMRlrq24EU2d');
+
+    //   if (await canLaunchUrl(whatsappSchemeUrl)) {
+    //     // WhatsApp is installed, open the channel in the app
+    //     await launchUrl(whatsappSchemeUrl,
+    //         mode: LaunchMode.externalApplication);
+    //   } else if (await canLaunchUrl(webUrl)) {
+    //     // WhatsApp not installed, open in browser instead
+    //     await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    //   } else {
+    //     // Can't launch either URL
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Could not open WhatsApp Channel')),
+    //     );
+    //   }
+    // }
+    Future<void> openWhatsAppWithConfirmation(BuildContext context) async {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Open WhatsApp?'),
+          content:
+              Text('''Before you leave the app, here’s what you should know:
+
+This group is a supportive community where you can:
+
+Discuss study topics with peers
+
+Get help and share tips
+
+Participate in fun challenges and win prizes
+
+If you’re ready to join, tap the link below and become part of our growing community!'''),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Yes'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed == true) {
+        // Now open WhatsApp as before
+        final channelUrl =
+            Uri.parse('https://whatsapp.com/channel/0029VbAvkqrDuMRlrq24EU2d');
+        final webUrl =
+            Uri.parse('https://chat.whatsapp.com/invite/your_invite_code');
+
+        if (await canLaunchUrl(channelUrl)) {
+          await launchUrl(channelUrl, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open WhatsApp Channel')),
+          );
+        }
+      }
+    }
+
     final userViewModel = Provider.of<UserViewModel>(context, listen: false);
 
     return FutureBuilder<bool>(
@@ -122,19 +194,7 @@ class HomeScreen extends StatelessWidget {
                     _buildActionButton(
                       icon: Icons.share,
                       onPressed: () async {
-                        final url = Uri.parse(
-                            'https://whatsapp.com/channel/0029VbAvkqrDuMRlrq24EU2d');
-          
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url,
-                              mode: LaunchMode.externalApplication);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Could not open WhatsApp Channel')),
-                          );
-                        }
+                        openWhatsAppWithConfirmation(context);
                       },
                       tooltip: 'Share',
                     ),

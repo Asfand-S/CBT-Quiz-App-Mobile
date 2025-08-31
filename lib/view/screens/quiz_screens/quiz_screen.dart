@@ -331,7 +331,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 25),
+                    padding: const EdgeInsets.symmetric(vertical: 40),
                     child: ElevatedButton(
                       onPressed: _nextQuestion,
                       style: ElevatedButton.styleFrom(

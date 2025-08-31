@@ -7,7 +7,7 @@ import '../models/custom_user.dart';
 
 class FirebaseService {
   static FirebaseAuth auth = FirebaseAuth.instance;
-  static FirebaseFirestore _db = FirebaseFirestore.instance;
+  static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   static User? get user => auth.currentUser;
 

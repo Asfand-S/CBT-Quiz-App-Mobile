@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cbt_quiz_android/data/services/firebase_service.dart';
+import 'package:cbt_quiz_android/view/screens/utility_screens/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -71,6 +72,9 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => PremiumScreen()));
 
       if (user == null) {
         Dialogs.snackBar(context, 'Login Failed');
@@ -231,8 +235,9 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
             const SizedBox(height: 24),
             Consumer<UserViewModel>(
               builder: (context, userViewModel, _) {
-                if (userViewModel.currentUser.isPremium)
+                if (userViewModel.currentUser.isPremium) {
                   return const SizedBox.shrink();
+                }
 
                 return ElevatedButton.icon(
                   icon:
@@ -243,6 +248,86 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                   ),
                   onPressed: () async {
                     loginWithGoogleAndSaveToFirestore();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 60),
+                    backgroundColor: myTealShade,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 8,
+                    shadowColor: Colors.teal.shade800,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            Consumer<UserViewModel>(
+              builder: (context, userViewModel, _) {
+                if (userViewModel.currentUser.isPremium) {
+                  return const SizedBox.shrink();
+                }
+
+                return ElevatedButton.icon(
+                  icon:
+                      const Icon(Icons.workspace_premium, color: Colors.white),
+                  label: const Text(
+                    'Delete account',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    try {
+                      final user = FirebaseService.auth.currentUser!;
+
+                      // Step 1: Trigger Google sign-in again to get fresh token
+                      final GoogleSignInAccount? googleUser =
+                          await GoogleSignIn().signIn();
+
+                      if (googleUser == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Sign-in aborted')),
+                        );
+                        return;
+                      }
+
+                      final GoogleSignInAuthentication googleAuth =
+                          await googleUser.authentication;
+
+                      final credential = GoogleAuthProvider.credential(
+                        accessToken: googleAuth.accessToken,
+                        idToken: googleAuth.idToken,
+                      );
+
+                      // Step 2: Re-authenticate
+                      await user.reauthenticateWithCredential(credential);
+
+                      // Step 3: Delete user
+                      await user.delete();
+
+                      // Optional: Clean up user data in Firestore
+                      await FirebaseService().updateUserData(
+                          user.uid, 'deleted', true); // or delete doc
+
+                      // Optional: Navigate away
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'requires-recent-login') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  'Please re-login to delete your account.')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${e.message}')),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Unexpected error: $e')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 60),

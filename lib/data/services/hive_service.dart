@@ -138,8 +138,9 @@ class HiveService {
       }
 
       await box.put(categoryId, categoryMap);
-      if (categoryUpdated != null)
+      if (categoryUpdated != null) {
         metadataBox.put('cat_$categoryId', categoryUpdated);
+      }
       print("✅ Downloaded and stored category: $categoryId");
     }
   }
@@ -354,7 +355,7 @@ class HiveService {
     String categoryId,
     List<String> bookmarks,
   ) async {
-    print("${bookmarks}");
+    print("$bookmarks");
     final List<Question> bookmarkedQuestions = [];
 
     final box = await Hive.openBox<Map>(_boxName); // use your _boxName
