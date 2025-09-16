@@ -16,11 +16,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> categories = ['Nursing', 'Midwifery'];
+  final List<Map<String, String>> categories = [
+    {"title": "Nursing", "image": "assets/images/stethoscope.png"},
+    {"title": "Midwifery", "image": "assets/images/pregnancy.png"},
+  ];
+
   int _selectedIndex = 0; // Track the selected bottom navigation item
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _openRedeemPage() async {
+      final Uri url = Uri.parse("https://play.google.com/redeem");
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw Exception("Could not launch $url");
+      }
+    }
+
     Future<void> openWhatsAppWithConfirmation(BuildContext context) async {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -267,6 +278,42 @@ If you're ready to join, tap the link below and become part of our growing commu
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    onTap: _openRedeemPage,
+
+                    // lose the drawer
+
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.help, color: Colors.teal),
+                    title: const Text(
+                      'Redeem wallet code',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onTap: () {
+                      NavigationService.navigateTo('/howToUse');
+                      Navigator.pop(context); // Close the drawer
+                    },
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.help, color: Colors.teal),
+                    title: const Text(
+                      'Toggle theme mode',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     onTap: () {
                       NavigationService.navigateTo('/howToUse');
                       Navigator.pop(context); // Close the drawer
@@ -307,26 +354,40 @@ If you're ready to join, tap the link below and become part of our growing commu
                           child: InkWell(
                             onTap: () => NavigationService.navigateTo(
                               '/quizType',
-                              arguments: category,
+                              arguments: category["title"],
                             ),
                             child: Container(
                               decoration: gradientBackground,
                               child: Center(
-                                child: Text(
-                                  category,
-                                  style: const TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                    letterSpacing: 2.5,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 6.0,
-                                        color: Colors.black45,
-                                        offset: Offset(2.0, 2.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(40),
+                                      child: Image.asset(
+                                        category["image"]!,
+                                        height: 60,
+                                        width: 60,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      category["title"]!,
+                                      style: const TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        letterSpacing: 2.5,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 6.0,
+                                            color: Colors.black45,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

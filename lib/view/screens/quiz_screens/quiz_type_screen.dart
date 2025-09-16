@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:cbt_quiz_android/view/screens/utility_screens/payment_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
