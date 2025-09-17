@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/navigation_service.dart';
+import '../../../view_model/theme_viewmodel.dart';
 import '../../../view_model/user_viewmodel.dart';
 import '../../../utils/themes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -315,8 +316,7 @@ If you're ready to join, tap the link below and become part of our growing commu
                       ),
                     ),
                     onTap: () {
-                      NavigationService.navigateTo('/howToUse');
-                      Navigator.pop(context); // Close the drawer
+                      Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
                     },
                     tileColor: Colors.teal.withOpacity(0.05),
                     hoverColor: Colors.teal.withOpacity(0.1),

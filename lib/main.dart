@@ -12,6 +12,7 @@ import 'view_model/question_viewmodel.dart';
 import 'view_model/set_viewmodel.dart';
 import 'view_model/user_viewmodel.dart';
 import 'view_model/topic_viewmodel.dart';
+import 'view_model/theme_viewmodel.dart';
 import 'utils/routes.dart';
 import 'utils/themes.dart';
 
@@ -25,17 +26,18 @@ void main() async {
   Hive.registerAdapter(SetAdapter());
   Hive.registerAdapter(QuestionAdapter());
 
-  runApp(MyApp());
+  runApp(MyApp1());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp1 extends StatelessWidget {
+  const MyApp1({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
 
         providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
           ChangeNotifierProvider(create: (_) => UserViewModel()),
           ChangeNotifierProxyProvider<UserViewModel, TopicViewModel>(
             create: (_) => TopicViewModel(),
@@ -58,12 +60,29 @@ class MyApp extends StatelessWidget {
                 questionViewModel!..setUserViewModel(userViewModel),
           ),
         ],
-        child: MaterialApp(
-            theme: appTheme,
-            title: 'Quiz App',
-            debugShowCheckedModeBanner: false,
-            navigatorKey: NavigationService.navigatorKey,
-            initialRoute: '/',
-            onGenerateRoute: onGenerateRoute));
+        child: const MyApp()
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          theme: lightAppTheme,
+          darkTheme: darkAppTheme,
+          themeMode: themeProvider.themeMode,
+          title: 'Quiz App',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: NavigationService.navigatorKey,
+          initialRoute: '/',
+          onGenerateRoute: onGenerateRoute,
+        );
+      },
+    );
   }
 }

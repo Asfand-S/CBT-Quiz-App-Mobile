@@ -62,7 +62,7 @@ class QuizCompleteScreen extends StatelessWidget {
                     Text(
                       "You scored $score out of $total",
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                          fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
