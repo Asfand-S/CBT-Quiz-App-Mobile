@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/navigation_service.dart';
-import '../../../view_model/theme_viewmodel.dart';
 import '../../../view_model/user_viewmodel.dart';
 import '../../../utils/themes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../view_model/theme_viewmodel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -273,7 +273,7 @@ If you're ready to join, tap the link below and become part of our growing commu
                   ListTile(
                     leading: const Icon(Icons.help, color: Colors.teal),
                     title: const Text(
-                      'How to Use',
+                      'Redeem promo code',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -298,8 +298,8 @@ If you're ready to join, tap the link below and become part of our growing commu
                       ),
                     ),
                     onTap: () {
-                      NavigationService.navigateTo('/howToUse');
                       Navigator.pop(context); // Close the drawer
+                      NavigationService.navigateTo('/howToUse');
                     },
                     tileColor: Colors.teal.withOpacity(0.05),
                     hoverColor: Colors.teal.withOpacity(0.1),
@@ -309,14 +309,15 @@ If you're ready to join, tap the link below and become part of our growing commu
                   ListTile(
                     leading: const Icon(Icons.help, color: Colors.teal),
                     title: const Text(
-                      'Toggle theme mode',
+                      'Night theme',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     onTap: () {
-                      Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .toggleTheme();
                     },
                     tileColor: Colors.teal.withOpacity(0.05),
                     hoverColor: Colors.teal.withOpacity(0.1),
@@ -422,7 +423,7 @@ If you're ready to join, tap the link below and become part of our growing commu
                     break;
                   case 3:
                     // Placeholder for Messages action
-                    NavigationService.navigateTo('/messages');
+                    NavigationService.navigateTo('/announce');
                     break;
                 }
               },
