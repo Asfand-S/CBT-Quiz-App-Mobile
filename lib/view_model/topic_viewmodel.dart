@@ -16,14 +16,40 @@ class TopicViewModel extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
   final HiveService _hiveService = HiveService();
 
-  Future<List<Topic>> fetchTopics(String categoryId) async {
+  Future<List<(bool, Topic)>> fetchTopics(String categoryId) async {
     try {
+      List<Topic> topics = [];
       if (currentUser.isPremium) {
-        return await _hiveService.getTopics(categoryId);
+        topics = await _hiveService.getTopics(categoryId);
       }
       else {
-        return await _firebaseService.getTopics(categoryId);
+        topics = await _firebaseService.getTopics(categoryId);
       }
+
+      // Map sets to (bool, Set) pairs
+      final List<(bool, Topic)> result = [];
+      for (var topic1 in topics) {
+        bool isLocked = true;
+
+        // If user is premium, unlock all sets
+        if (currentUser.isPremium) { 
+          isLocked = false; 
+        }
+        else {
+          // If user has not unlocked 2 subjects yet, then unlock all topics so that he may choose 2 of them
+          if (categoryId.toLowerCase() == "nursing" && currentUser.unlockedTopicsNursing.length < 2) { isLocked = false; }
+          if (categoryId.toLowerCase() == "midwifery" && currentUser.unlockedTopicsMidwifery.length < 2) { isLocked = false; }
+
+          // If user has unlocked 2 subjects, then only allow him access to those 2 subjects
+          if (currentUser.unlockedTopicsMidwifery.contains(topic1.id) || currentUser.unlockedTopicsNursing.contains(topic1.id)) {
+            isLocked = false;
+          }
+        }
+
+        result.add((isLocked, topic1));
+      }
+
+      return result;
     } catch (e) {
       print("Error fetching topics: $e");
       return []; // Return empty list on failure

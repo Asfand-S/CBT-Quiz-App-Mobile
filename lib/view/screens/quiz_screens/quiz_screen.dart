@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class _QuizScreenState extends State<QuizScreen> {
   int? _selectedIndex; // Track the selected answer
   late DateTime _startTime;
   Timer? _quizTimer;
-  Duration _remainingTime = Duration(minutes: 20);
+  Duration _remainingTime = Duration(hours: 2);
 
   @override
   void initState() {
@@ -95,13 +96,8 @@ class _QuizScreenState extends State<QuizScreen> {
       _score++;
     }
 
-    if (widget.isMock) {
-      // For mock mode, proceed to next question immediately
-      _nextQuestion();
-    } else {
-      // For practice mode, show explanation and wait for user to press Next
-      setState(() {});
-    }
+    // show explanation and wait for user to press Next
+    setState(() {});
   }
 
   void _nextQuestion() {
@@ -248,7 +244,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         // Right: Timer display
                         if (widget.isMock) ...[
                           Text(
-                            _formatDuration(_remainingTime),
+                            _formatDuration(DateTime.now().difference(_startTime)),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -276,7 +272,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     const SizedBox(height: 24),
                     ...List.generate(q.options.length, (i) {
                       Color buttonColor = myTealShade; // Default color
-                      if (_selectedIndex != null && !widget.isMock) {
+                      if (_selectedIndex != null) {
                         if (i == q.correctIndex) {
                           buttonColor = Colors.green.shade600; // Correct answer
                         } else if (i == _selectedIndex && i != q.correctIndex) {
@@ -325,7 +321,7 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: widget.isMock || _selectedIndex == null
+        bottomNavigationBar: _selectedIndex == null
             ? null
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,

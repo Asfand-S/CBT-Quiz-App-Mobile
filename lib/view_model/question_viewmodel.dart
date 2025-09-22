@@ -24,7 +24,7 @@ class QuestionViewModel extends ChangeNotifier {
       }
       else {
         questions = await _firebaseService.getQuestions(categoryId, topicId, setId);
-        if (questions.length > 4) questions = questions.sublist(0, 4);
+        if (questions.length > 2) questions = questions.sublist(0, 2);
       }
       return questions;
     }

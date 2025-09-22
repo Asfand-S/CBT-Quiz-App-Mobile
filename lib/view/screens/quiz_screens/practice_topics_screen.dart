@@ -21,7 +21,7 @@ class PracticeTopicsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Topics'),
       ),
-      body: FutureBuilder<List<Topic>>(
+      body: FutureBuilder<List<(bool, Topic)>>(
         future: topicVM.fetchTopics(categoryId),
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
@@ -33,7 +33,9 @@ class PracticeTopicsScreen extends StatelessWidget {
             crossAxisCount: 2,
             padding: EdgeInsets.all(16),
             childAspectRatio: 3,
-            children: topics.map((topic) {
+            children: topics.map((record) {
+              final (isLocked, topic) = record;
+
               return Card(
                 elevation: 6,
                 margin: EdgeInsets.all(8),
@@ -41,37 +43,67 @@ class PracticeTopicsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: InkWell(
-                  onTap: () {
-                    if (userVM.allowTopicAccess(categoryId, topic.id)) {
-                      // Navigate to quiz for this topic
-                      NavigationService.navigateTo(
-                        '/sets',
-                        arguments: {
-                          'categoryId': categoryId,
-                          'topicId': topic.id,
-                          'isMock': false,
-                        },
-                      );
-                    }
-                    else {
-                      // Show a message that the user is not allowed to access this topic
-                      Dialogs.snackBar(context, 'You have access to 2 topics only.\nUpgrade to premium to access more topics.');
-                    }
-                  },
+                  onTap: isLocked
+                  ? () {
+                          Dialogs.snackBar(context,
+                            'Locked – Upgrade to Access.');
+                        }
+                  : () {
+                        if (!topicVM.currentUser.isPremium) {
+                          if (categoryId.toLowerCase() == "nursing") { 
+                            List<String> topicsIdList = topicVM.currentUser.unlockedTopicsNursing;
+                            if (!topicsIdList.contains(topic.id)) {
+                              topicsIdList.add(topic.id);
+                              userVM.updateUserData('unlockedTopicsNursing', topicsIdList);
+                            }
+                          }
+                          if (categoryId.toLowerCase() == "midwifery") { 
+                            List<String> topicsIdList = topicVM.currentUser.unlockedTopicsMidwifery;
+                            if (!topicsIdList.contains(topic.id)) {
+                              topicsIdList.add(topic.id);
+                              userVM.updateUserData('unlockedTopicsMidwifery', topicsIdList);
+                            }
+                          }
+                        }
+                    
+                        // Navigate to quiz for this topic
+                        NavigationService.navigateTo(
+                          '/sets',
+                          arguments: {
+                            'categoryId': categoryId,
+                            'topicId': topic.id,
+                            'isMock': false,
+                          },
+                        );
+                      },
                   child: Container(
                     decoration: gradientBackground,
-                    child: Center(
-                      child: Text(
-                        topic.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Text(
+                          topic.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
+                        if (isLocked)
+                          const Positioned(
+                            right: 8,
+                            top: 8,
+                            child: Icon(
+                              Icons.lock,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                      ],
                     ),
+                    
                   ),
                 ),
               );

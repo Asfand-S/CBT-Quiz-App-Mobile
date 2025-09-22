@@ -64,8 +64,13 @@ class SetsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   onTap: isLocked
                       ? () {
-                          Dialogs.snackBar(context,
-                              'This set is locked till you complete the previous set by 60%.');
+                          if (!setVM.currentUser.isPremium) {
+                            Dialogs.snackBar(context,
+                              'Locked – Upgrade to Access.');
+                          } else {
+                            Dialogs.snackBar(context,
+                              'This set is locked till you complete the previous set with 60% or higher score.');
+                          }
                         }
                       : () {
                           NavigationService.navigateTo(

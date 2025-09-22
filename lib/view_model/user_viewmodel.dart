@@ -190,31 +190,6 @@ class UserViewModel extends ChangeNotifier {
 
 
 
-  bool allowTopicAccess(String categoryId, String topicId) {
-    if (currentUser.isPremium) return true;
-    var topics = [];
-
-    if (categoryId.toLowerCase() == "nursing") {
-      topics = currentUser.unlockedTopicsNursing;
-    } else if (categoryId.toLowerCase() == "midwifery") {
-      topics = currentUser.unlockedTopicsMidwifery;
-    }
-
-    if (topics.contains(topicId)) return true;
-
-    if (topics.length > 1) return false;
-
-    topics.add(topicId);
-    if (categoryId.toLowerCase() == "nursing") {
-      updateUserData("unlockedTopicsNursing", topics);
-    } else if (categoryId.toLowerCase() == "midwifery") {
-      updateUserData("unlockedTopicsMidwifery", topics);
-    }
-
-    notifyListeners();
-    return true;
-  }
-
   Future<List<Question?>> getBookmarkedQuestions(String categoryId) async {
     final bookmarks = currentUser.bookmarks;
 

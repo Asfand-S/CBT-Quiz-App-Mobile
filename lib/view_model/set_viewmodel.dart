@@ -50,6 +50,7 @@ class SetViewModel extends ChangeNotifier {
       // Map sets to (bool, Set) pairs
       final List<(bool, Set)> result = [];
       bool latest_set = false;
+      int unlockedCount = 0;
       for (var set1 in sets) {
         bool isLocked = false;
         if (currentUser.passedQuizzes.contains(set1.id)) {
@@ -57,11 +58,13 @@ class SetViewModel extends ChangeNotifier {
         } else {
           if (!latest_set) {
             latest_set = true;
-            isLocked = false;
+            if (!currentUser.isPremium && unlockedCount > 1) { isLocked = true; }
+            else { isLocked = false; }
           } else {
             isLocked = true;
           }
         }
+        if (!isLocked) { unlockedCount++; }
         result.add((isLocked, set1));
       }
 
