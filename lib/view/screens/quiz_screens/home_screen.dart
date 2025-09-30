@@ -39,17 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context) => AlertDialog(
           title: const Text('Open WhatsApp?'),
           content: const Text(
-              '''Before you leave the app, here’s what you should know:
+              '''Connect with other nursing and midwifery students in our WhatsApp community. Share study tips, discuss the exam, and discuss wrong or duplicate questions to help improve the app.
 
-This group is a supportive community where you can:
+This group is for educational purposes only and is not a substitute for professional medical advice.
 
-Discuss study topics with peers
-
-Get help and share tips
-
-Participate in fun challenges and win prizes
-
-If you're ready to join, tap the link below and become part of our growing community!'''),
+Participation is optional and will not affect your access to the app.'''),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -169,15 +163,33 @@ If you're ready to join, tap the link below and become part of our growing commu
                   ListTile(
                     leading: const Icon(Icons.privacy_tip, color: Colors.teal),
                     title: const Text(
-                      'Privacy Policy',
+                      'About us',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     onTap: () {
-                      NavigationService.navigateTo('/privacyPolicy');
                       Navigator.pop(context); // Close the drawer
+                      NavigationService.navigateTo('/aboutus');
+                    },
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.description, color: Colors.teal),
+                    title: const Text(
+                      'How to use',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer
+                      NavigationService.navigateTo('/howtouse');
                     },
                     tileColor: Colors.teal.withOpacity(0.05),
                     hoverColor: Colors.teal.withOpacity(0.1),
@@ -194,8 +206,87 @@ If you're ready to join, tap the link below and become part of our growing commu
                       ),
                     ),
                     onTap: () {
-                      NavigationService.navigateTo('/termsAndConditions');
                       Navigator.pop(context); // Close the drawer
+                      NavigationService.navigateTo('/terms');
+                    },
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.description, color: Colors.teal),
+                    title: const Text(
+                      'Privacy Policy',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer
+                      NavigationService.navigateTo('/privacy');
+                    },
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.code, color: Colors.teal),
+                    title: const Text(
+                      'Redeem promo code',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onTap: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Got a promo code?'),
+                          content: const Text(
+                            '1. Tap Continue\n\n'
+                            '2. Paste your code and press Redeem\n\n'
+                            '3. Restart the app to unlock Premium',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(false), // cancel
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(true), // continue
+                              child: const Text('Continue'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        _openRedeemPage();
+                      }
+                    },
+                    tileColor: Colors.teal.withOpacity(0.05),
+                    hoverColor: Colors.teal.withOpacity(0.1),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.dark_mode, color: Colors.teal),
+                    title: const Text(
+                      'Night theme',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    onTap: () {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .toggleTheme();
                     },
                     tileColor: Colors.teal.withOpacity(0.05),
                     hoverColor: Colors.teal.withOpacity(0.1),
@@ -213,6 +304,35 @@ If you're ready to join, tap the link below and become part of our growing commu
                       ),
                     ),
                     onTap: () async {
+                      // Show confirmation dialog first
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Delete Account'),
+                          content: const Text(
+                            'Are you sure you want to delete your account?\n\n'
+                            '⚠️ This action is irreversible.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(false), // cancel
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(true), // continue
+                              child: const Text(
+                                'Continue',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm != true) return; // user pressed cancel
+
                       try {
                         final user = FirebaseService.auth.currentUser!;
 
@@ -242,10 +362,10 @@ If you're ready to join, tap the link below and become part of our growing commu
                         await user.delete();
 
                         // Optional: Clean up user data in Firestore
-                        await FirebaseService().updateUserData(
-                            user.uid, 'deleted', true); // or delete doc
+                        await FirebaseService()
+                            .updateUserData(user.uid, 'deleted', true);
 
-                        // Optional: Navigate away
+                        // Navigate away
                         Navigator.pushReplacementNamed(context, '/home');
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'requires-recent-login') {
@@ -269,61 +389,7 @@ If you're ready to join, tap the link below and become part of our growing commu
                     hoverColor: Colors.teal.withOpacity(0.1),
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.help, color: Colors.teal),
-                    title: const Text(
-                      'Redeem promo code',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: _openRedeemPage,
-
-                    // lose the drawer
-
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.help, color: Colors.teal),
-                    title: const Text(
-                      'Redeem wallet code',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer
-                      NavigationService.navigateTo('/howToUse');
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.help, color: Colors.teal),
-                    title: const Text(
-                      'Night theme',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .toggleTheme();
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
+                  )
                 ],
               ),
             ),

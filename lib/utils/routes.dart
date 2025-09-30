@@ -1,6 +1,9 @@
 import 'package:cbt_quiz_android/data/models/question.dart';
+import 'package:cbt_quiz_android/view/screens/Text_Pages/how_to_use.dart';
+import 'package:cbt_quiz_android/view/screens/Text_Pages/privacy.dart';
+import 'package:cbt_quiz_android/view/screens/Text_Pages/terms.dart';
 import 'package:cbt_quiz_android/view/screens/quiz_screens/announcement.dart';
-import 'package:cbt_quiz_android/view/screens/utility_screens/aboutus_screen.dart';
+import 'package:cbt_quiz_android/view/screens/Text_Pages/aboutus_screen.dart';
 import 'package:flutter/material.dart';
 import '../view/screens/quiz_screens/bookmarked_question_screen.dart';
 import '../view/screens/quiz_screens/sets_screen.dart';
@@ -23,6 +26,12 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => PremiumScreen());
     case '/aboutus':
       return MaterialPageRoute(builder: (_) => AboutUsPage());
+    case '/terms':
+      return MaterialPageRoute(builder: (_) => TermsOfUsePage());
+    case '/howtouse':
+      return MaterialPageRoute(builder: (_) => HowToUsePage());
+    case '/privacy':
+      return MaterialPageRoute(builder: (_) => PrivacyPolicyPage());
     case '/announce':
       return MaterialPageRoute(builder: (_) => Announcement());
     case '/bookmarks':

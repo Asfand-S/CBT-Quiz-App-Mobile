@@ -15,113 +15,83 @@ class _AnnouncementState extends State<Announcement> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Announcements",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.teal[700],
-        elevation: 0,
-        centerTitle: true,
+        title: const Text("Announcements"),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.teal[50]!, Colors.teal[100]!],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: StreamBuilder<QuerySnapshot>(
-            stream: firestore.orderBy('message', descending: true).snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.teal,
-                  ),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: Colors.red[600],
-                        size: 40,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Error loading announcements",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.teal[900],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.teal[600],
-                        size: 40,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "No announcements available",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.teal[900],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  var doc = snapshot.data!.docs[index];
-                  var message = doc['message'] ?? "No message";
-
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        message,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.teal[900],
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  );
-                },
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: firestore.orderBy('message', descending: true).snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
               );
-            },
-          ),
+            }
+
+            if (snapshot.hasError) {
+              return _buildMessage(
+                context,
+                icon: Icons.error_outline,
+                color: Theme.of(context).colorScheme.error,
+                text: "Error loading announcements",
+              );
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return _buildMessage(
+                context,
+                icon: Icons.info_outline,
+                color: Theme.of(context).colorScheme.secondary,
+                text: "No announcements available",
+              );
+            }
+
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var doc = snapshot.data!.docs[index];
+                var message = doc['message'] ?? "No message";
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      message,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 16,
+                            height: 1.5,
+                          ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
+      ),
+    );
+  }
+
+  Widget _buildMessage(BuildContext context,
+      {required IconData icon, required Color color, required String text}) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 16,
+                ),
+          ),
+        ],
       ),
     );
   }

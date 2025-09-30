@@ -232,13 +232,10 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
             ),
 
             // 👇 Only show if user is not paid
+
             const SizedBox(height: 24),
             Consumer<UserViewModel>(
               builder: (context, userViewModel, _) {
-                if (userViewModel.currentUser.isPremium) {
-                  return const SizedBox.shrink();
-                }
-
                 return ElevatedButton.icon(
                   icon:
                       const Icon(Icons.workspace_premium, color: Colors.white),
@@ -247,32 +244,35 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Premium Subscription'),
-                        content: const Text(
-                            '''If this account is being used on multiple devices. Be careful : progress and bookmarks may not sync, and premium access could be affected.”
-.”
+                    if (userViewModel.currentUser.isPremium) {
+                      // Show warning dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Warning'),
+                          content: const Text(
+                            '''This account is being used on multiple devices. Be careful: progress and bookmarks may not sync, and premium access could be affected.
 
-And then 
-✅He looses his progress 
-✅Looses bookmark '''),
-                        actions: [
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () => Navigator.of(context).pop(),
+
+
+User should lose progress and bookmarks.
+
+This should discourage account sharing.
+
+https://docs.google.com/document/d/1MKS0t4KxpIk_1BiTj-VeB9gWVJw3bq9cpvWmwXk8KOI/view?pli=1&tab=t.0#heading=h.27rfpkiyipl7''',
                           ),
-                          TextButton(
-                            child: const Text('proceed'),
-                            onPressed: () async {
-                              loginWithGoogleAndSaveToFirestore();
-                              // Add subscribe logic here
-                            },
-                          ),
-                        ],
-                      ),
-                    );
+                          actions: [
+                            TextButton(
+                              child: const Text('OK'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      // Directly go to payment flow
+                      loginWithGoogleAndSaveToFirestore();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 60),
@@ -287,6 +287,61 @@ And then
                 );
               },
             ),
+
+//             Consumer<UserViewModel>(
+//               builder: (context, userViewModel, _) {
+//                 if (userViewModel.currentUser.isPremium) {
+//                   return const SizedBox.shrink();
+//                 }
+
+//                 return ElevatedButton.icon(
+//                   icon:
+//                       const Icon(Icons.workspace_premium, color: Colors.white),
+//                   label: const Text(
+//                     'Get Premium',
+//                     style: TextStyle(fontSize: 18, color: Colors.white),
+//                   ),
+//                   onPressed: () {
+//                     showDialog(
+//                       context: context,
+//                       builder: (context) => AlertDialog(
+//                         title: const Text('Premium Subscription'),
+//                         content: const Text(
+//                             '''If this account is being used on multiple devices. Be careful : progress and bookmarks may not sync, and premium access could be affected.”
+// .”
+
+// And then
+// ✅He looses his progress
+// ✅Looses bookmark '''),
+//                         actions: [
+//                           TextButton(
+//                             child: const Text('Cancel'),
+//                             onPressed: () => Navigator.of(context).pop(),
+//                           ),
+//                           TextButton(
+//                             child: const Text('proceed'),
+//                             onPressed: () async {
+//                               loginWithGoogleAndSaveToFirestore();
+//                               // Add subscribe logic here
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                     );
+//                   },
+//                   style: ElevatedButton.styleFrom(
+//                     minimumSize: const Size(double.infinity, 60),
+//                     backgroundColor: myTealShade,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(16),
+//                     ),
+//                     elevation: 8,
+//                     shadowColor: Colors.teal.shade800,
+//                     padding: const EdgeInsets.symmetric(vertical: 16),
+//                   ),
+//                 );
+//               },
+//             ),
             const SizedBox(height: 24),
             // Consumer<UserViewModel>(
             //   builder: (context, userViewModel, _) {
