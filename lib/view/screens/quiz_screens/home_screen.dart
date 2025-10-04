@@ -116,281 +116,288 @@ Participation is optional and will not affect your access to the app.'''),
         // ✅ Access allowed
         return SafeArea(
           child: Scaffold(
-            drawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.teal, Colors.tealAccent],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 8.0,
-                          offset: Offset(0, 2),
+            drawer: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.64,
+              child: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.teal, Colors.tealAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'Menu',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 8.0,
+                            offset: Offset(0, 2),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Explore Options',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.privacy_tip, color: Colors.teal),
-                    title: const Text(
-                      'About us',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        ],
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer
-                      NavigationService.navigateTo('/aboutus');
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.description, color: Colors.teal),
-                    title: const Text(
-                      'How to use',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer
-                      NavigationService.navigateTo('/howtouse');
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.description, color: Colors.teal),
-                    title: const Text(
-                      'Terms and Conditions',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer
-                      NavigationService.navigateTo('/terms');
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.description, color: Colors.teal),
-                    title: const Text(
-                      'Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer
-                      NavigationService.navigateTo('/privacy');
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.code, color: Colors.teal),
-                    title: const Text(
-                      'Redeem promo code',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Got a promo code?'),
-                          content: const Text(
-                            '1. Tap Continue\n\n'
-                            '2. Paste your code and press Redeem\n\n'
-                            '3. Restart the app to unlock Premium',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(false), // cancel
-                              child: const Text('Cancel'),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text(
+                            'Menu',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
                             ),
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(true), // continue
-                              child: const Text('Continue'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true) {
-                        _openRedeemPage();
-                      }
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.dark_mode, color: Colors.teal),
-                    title: const Text(
-                      'Night theme',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .toggleTheme();
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  ListTile(
-                    leading:
-                        const Icon(Icons.delete_forever, color: Colors.teal),
-                    title: const Text(
-                      'Delete Account',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () async {
-                      // Show confirmation dialog first
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Delete Account'),
-                          content: const Text(
-                            'Are you sure you want to delete your account?\n\n'
-                            '⚠️ This action is irreversible.',
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(false), // cancel
-                              child: const Text('Cancel'),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Explore Options',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic,
                             ),
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(true), // continue
-                              child: const Text(
-                                'Continue',
-                                style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.privacy_tip, color: Colors.teal),
+                      title: const Text(
+                        'About us',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context); // Close the drawer
+                        NavigationService.navigateTo('/aboutus');
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.description, color: Colors.teal),
+                      title: const Text(
+                        'How to use',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context); // Close the drawer
+                        NavigationService.navigateTo('/howtouse');
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.description, color: Colors.teal),
+                      title: const Text(
+                        'Terms and Conditions',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context); // Close the drawer
+                        NavigationService.navigateTo('/terms');
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.description, color: Colors.teal),
+                      title: const Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context); // Close the drawer
+                        NavigationService.navigateTo('/privacy');
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.code, color: Colors.teal),
+                      title: const Text(
+                        'Redeem promo code',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Terms of use'),
+                            content: const Text(
+                              '1. Tap Continue\n\n'
+                              '2. Paste your code and press Redeem\n\n'
+                              '3. Restart the app to unlock Premium',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false), // cancel
+                                child: const Text('Cancel'),
                               ),
-                            ),
-                          ],
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true), // continue
+                                child: const Text('Continue'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          _openRedeemPage();
+                        }
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.dark_mode, color: Colors.teal),
+                      title: const Text(
+                        'Night theme',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
-                      );
-
-                      if (confirm != true) return; // user pressed cancel
-
-                      try {
-                        final user = FirebaseService.auth.currentUser!;
-
-                        // Step 1: Trigger Google sign-in again to get fresh token
-                        final GoogleSignInAccount? googleUser =
-                            await GoogleSignIn().signIn();
-
-                        if (googleUser == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Sign-in aborted')),
-                          );
-                          return;
-                        }
-
-                        final GoogleSignInAuthentication googleAuth =
-                            await googleUser.authentication;
-
-                        final credential = GoogleAuthProvider.credential(
-                          accessToken: googleAuth.accessToken,
-                          idToken: googleAuth.idToken,
+                      ),
+                      onTap: () {
+                        Provider.of<ThemeProvider>(context, listen: false)
+                            .toggleTheme();
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.delete_forever, color: Colors.teal),
+                      title: const Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () async {
+                        // Show confirmation dialog first
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Account'),
+                            content: const Text(
+                              'Are you sure you want to delete your account?\n\n'
+                              '⚠️ This action is irreversible.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false), // cancel
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true), // continue
+                                child: const Text(
+                                  'Continue',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
 
-                        // Step 2: Re-authenticate
-                        await user.reauthenticateWithCredential(credential);
+                        if (confirm != true) return; // user pressed cancel
 
-                        // Step 3: Delete user
-                        await user.delete();
+                        try {
+                          final user = FirebaseService.auth.currentUser!;
 
-                        // Optional: Clean up user data in Firestore
-                        await FirebaseService()
-                            .updateUserData(user.uid, 'deleted', true);
+                          // Step 1: Trigger Google sign-in again to get fresh token
+                          final GoogleSignInAccount? googleUser =
+                              await GoogleSignIn().signIn();
 
-                        // Navigate away
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'requires-recent-login') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Please re-login to delete your account.')),
+                          if (googleUser == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Sign-in aborted')),
+                            );
+                            return;
+                          }
+
+                          final GoogleSignInAuthentication googleAuth =
+                              await googleUser.authentication;
+
+                          final credential = GoogleAuthProvider.credential(
+                            accessToken: googleAuth.accessToken,
+                            idToken: googleAuth.idToken,
                           );
-                        } else {
+
+                          // Step 2: Re-authenticate
+                          await user.reauthenticateWithCredential(credential);
+
+                          // Step 3: Delete user
+                          await user.delete();
+
+                          // Optional: Clean up user data in Firestore
+                          await FirebaseService()
+                              .updateUserData(user.uid, 'deleted', true);
+
+                          // Navigate away
+                          Navigator.pushReplacementNamed(context, '/home');
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'requires-recent-login') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Please re-login to delete your account.')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.message}')),
+                            );
+                          }
+                        } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: ${e.message}')),
+                            SnackBar(content: Text('Unexpected error: $e')),
                           );
                         }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Unexpected error: $e')),
-                        );
-                      }
-                    },
-                    tileColor: Colors.teal.withOpacity(0.05),
-                    hoverColor: Colors.teal.withOpacity(0.1),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  )
-                ],
+                      },
+                      tileColor: Colors.teal.withOpacity(0.05),
+                      hoverColor: Colors.teal.withOpacity(0.1),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                    )
+                  ],
+                ),
               ),
             ),
             appBar: AppBar(

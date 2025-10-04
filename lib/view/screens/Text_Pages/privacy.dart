@@ -4,6 +4,18 @@ import 'package:url_launcher/url_launcher.dart';
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
+  // function to open link in browser
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse(
+      'https://docs.google.com/document/d/1MKS0t4KxpIk_1BiTj-VeB9gWVJw3bq9cpvWmwXk8KOI/edit?usp=sharing',
+    );
+
+    // always try to launch with external browser
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +31,8 @@ class PrivacyPolicyPage extends StatelessWidget {
             children: [
               _buildHeader(),
               const SizedBox(height: 18),
+
+              // section 1
               _buildSectionTitle('Your Privacy Matters'),
               const SizedBox(height: 8),
               _buildCard(
@@ -27,7 +41,10 @@ class PrivacyPolicyPage extends StatelessWidget {
                   style: TextStyle(fontSize: 16, height: 1.4),
                 ),
               ),
+
               const SizedBox(height: 18),
+
+              // section 2
               _buildSectionTitle('What We Do and Don’t Collect'),
               const SizedBox(height: 8),
               _buildCard(
@@ -35,28 +52,36 @@ class PrivacyPolicyPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                        '• We Collect the Absolute Minimum: No name, no age, no separate account or password required.',
-                        style: TextStyle(fontSize: 16, height: 1.4)),
+                      '• We Collect the Absolute Minimum: No name, no age, no separate account or password required.',
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
                     SizedBox(height: 10),
                     Text(
-                        '• Secure Payments by Google: All payments are handled by Google Play Store. We never see or store your financial info.',
-                        style: TextStyle(fontSize: 16, height: 1.4)),
+                      '• Secure Payments by Google: All payments are handled by Google Play Store. We never see or store your financial info.',
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
                     SizedBox(height: 10),
                     Text(
-                        '• Your Progress is Private: Scores, bookmarks, and test history stay on your device only.',
-                        style: TextStyle(fontSize: 16, height: 1.4)),
+                      '• Your Progress is Private: Scores, bookmarks, and test history stay on your device only.',
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
                     SizedBox(height: 10),
                     Text(
-                        '• Purchase Verification Only: We only get a Google confirmation (with your email) to restore premium access on new devices.',
-                        style: TextStyle(fontSize: 16, height: 1.4)),
+                      '• Purchase Verification Only: We only get a Google confirmation (with your email) to restore premium access on new devices.',
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
                     SizedBox(height: 10),
                     Text(
-                        '• We Never Sell Your Data: No selling, renting, or sharing of your info with marketers — ever.',
-                        style: TextStyle(fontSize: 16, height: 1.4)),
+                      '• We Never Sell Your Data: No selling, renting, or sharing of your info with marketers — ever.',
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 18),
+
+              // section 3
               _buildSectionTitle('Full Policy'),
               const SizedBox(height: 8),
               _buildCard(
@@ -68,15 +93,10 @@ class PrivacyPolicyPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16, height: 1.4),
                     ),
                     const SizedBox(height: 12),
+
+                    // clickable link
                     InkWell(
-                      onTap: () async {
-                        final url = Uri.parse(
-                            'https://docs.google.com/document/d/1MKS0t4KxpIk_1BiTj-VeB9gWVJw3bq9cpvWmwXk8KOI/edit?usp=sharing');
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url,
-                              mode: LaunchMode.externalApplication);
-                        }
-                      },
+                      onTap: _launchPrivacyPolicy,
                       child: const Text(
                         '[Read our Full Privacy Policy Here]',
                         style: TextStyle(
@@ -89,10 +109,14 @@ class PrivacyPolicyPage extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(height: 30),
+
               Center(
-                child: Text('© ${DateTime.now().year} Nursing CBT NG',
-                    style: Theme.of(context).textTheme.bodySmall),
+                child: Text(
+                  '© ${DateTime.now().year} Nursing CBT NG',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ),
             ],
           ),
@@ -101,6 +125,7 @@ class PrivacyPolicyPage extends StatelessWidget {
     );
   }
 
+  // header widget
   Widget _buildHeader() {
     return Row(
       children: [
@@ -114,27 +139,35 @@ class PrivacyPolicyPage extends StatelessWidget {
           child: const Icon(Icons.privacy_tip, size: 36, color: Colors.green),
         ),
         const SizedBox(width: 14),
-        Expanded(
+        const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text('Privacy Policy',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            children: [
+              Text(
+                'Privacy Policy',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
               SizedBox(height: 4),
-              Text('Your privacy, protected.',
-                  style: TextStyle(fontSize: 14, color: Colors.black54)),
+              Text(
+                'Your privacy, protected.',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
 
+  // section title widget
   Widget _buildSectionTitle(String title) {
-    return Text(title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600));
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+    );
   }
 
+  // card widget
   Widget _buildCard({required Widget child}) {
     return Card(
       elevation: 2,

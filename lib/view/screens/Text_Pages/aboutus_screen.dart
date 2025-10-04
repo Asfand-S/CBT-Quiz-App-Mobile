@@ -17,19 +17,21 @@ class AboutUsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Nursing CBT NG is a powerful exam prep app built for nursing and midwifery students preparing for the Nursing and Midwifery Council of Nigeria (NMCN) exams.',
+                '''Nursing CBT NG is a powerful exam prep app built for nursing and midwifery students preparing for the Nursing and Midwifery Council of Nigeria (NMCN) exams.
+It features over 15,000 CBT questions and answers, covering the full syllabus for both nursing and midwifery - organized course by course and topic by topic for easy learning.
+The app also includes more than 60 full-length mock exams, each containing 250 fresh, unique questions, designed to replicate the official pre-council format and help students test their readiness and improve their confidence before the actual exam.''',
                 style: TextStyle(fontSize: 16, height: 1.5),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'It features over 15,000 CBT questions and answers, covering the full syllabus for both nursing and midwifery — organized course by course and topic by topic for easy learning.',
-                style: TextStyle(fontSize: 16, height: 1.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'The app also includes more than 20 Council mock exam sets based on past questions to help students test their readiness and improve their confidence before the actual exam.',
-                style: TextStyle(fontSize: 16, height: 1.5),
-              ),
+              // const SizedBox(height: 16),
+              // Text(
+              //   'It features over 15,000 CBT questions and answers, covering the full syllabus for both nursing and midwifery — organized course by course and topic by topic for easy learning.',
+              //   style: TextStyle(fontSize: 16, height: 1.5),
+              // ),
+              // const SizedBox(height: 16),
+              // Text(
+              //   'The app also includes more than 20 Council mock exam sets based on past questions to help students test their readiness and improve their confidence before the actual exam.',
+              //   style: TextStyle(fontSize: 16, height: 1.5),
+              // ),
               const SizedBox(height: 24),
               Text(
                 'Key Features:',
@@ -39,14 +41,15 @@ class AboutUsPage extends StatelessWidget {
                     color: Colors.teal),
               ),
               const SizedBox(height: 12),
-              featureBullet('15,000+ practice questions with answers'),
-              featureBullet('Topic-by-topic and course-by-course breakdown'),
               featureBullet(
-                  'Mock past questions for both nursing and midwifery'),
+                  '15,000+ topic-by-topic practice questions with explanation'),
+              featureBullet(
+                  '60+ full-length pre-council mock questions with timing'),
+              featureBullet('Bookmark challenging questions'),
               featureBullet('Instant feedback and detailed explanations'),
-              featureBullet('Based on the NMCN syllabus'),
+              featureBullet('Based on the NMCN current syllabus'),
               featureBullet(
-                  'Also useful for students in Anglophone countries with similar curricula'),
+                  'Useful for all nursing students worldwide as it contains core academic nursing scenarios and courses'),
             ],
           ),
         ),

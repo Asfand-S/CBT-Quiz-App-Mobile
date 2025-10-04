@@ -20,12 +20,10 @@ class _AnnouncementState extends State<Announcement> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: StreamBuilder<QuerySnapshot>(
-          stream: firestore.orderBy('message', descending: true).snapshots(),
+          stream: firestore.orderBy('timestamp', descending: true).snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
@@ -58,15 +56,23 @@ class _AnnouncementState extends State<Announcement> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
+                  child: ListTile(
+                    title: Text(
                       message,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontSize: 16,
                             height: 1.5,
                           ),
                     ),
+                    // trailing: IconButton(
+                    //   icon: const Icon(Icons.delete, color: Colors.red),
+                    //   onPressed: () async {
+                    //     await firestore.doc(doc.id).delete();
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       const SnackBar(content: Text("Announcement deleted")),
+                    //     );
+                    //   },
+                    // ),
                   ),
                 );
               },

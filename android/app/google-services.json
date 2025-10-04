@@ -22,14 +22,6 @@
           }
         },
         {
-          "client_id": "509723349571-t22nrj8avgoj8j903cgcnibv43hbpg7i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cbt.quizapp",
-            "certificate_hash": "fc2c89000059a4407e9ac1616ee830df3634fdfb"
-          }
-        },
-        {
           "client_id": "509723349571-335flvufdkpe4jbclgbmtgarj83bmteb.apps.googleusercontent.com",
           "client_type": 3
         }
