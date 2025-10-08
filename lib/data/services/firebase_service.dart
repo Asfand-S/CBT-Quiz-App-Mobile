@@ -16,6 +16,7 @@ class FirebaseService {
         .collection('categories')
         .doc(categoryId.toLowerCase())
         .collection('topics')
+        .orderBy('createdAt')
         .get();
     return query.docs.map((doc) => Topic.fromMap(doc.id, doc.data())).toList();
   }
