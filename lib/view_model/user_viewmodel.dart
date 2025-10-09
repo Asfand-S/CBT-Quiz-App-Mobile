@@ -62,8 +62,6 @@ class UserViewModel extends ChangeNotifier {
       await prefs.setBool('isPremium', user.isPremium);
       await prefs.setStringList('bookmarks', user.bookmarks);
       await prefs.setStringList('passedQuizzes', user.passedQuizzes);
-      await prefs.setStringList('unlockedTopicsNursing', user.unlockedTopicsNursing);
-      await prefs.setStringList('unlockedTopicsMidwifery', user.unlockedTopicsMidwifery);
       await prefs.setString('lastActive', user.lastActive!);
       await prefs.setString('email', user.email);
     }
@@ -75,8 +73,6 @@ class UserViewModel extends ChangeNotifier {
     bool isPremium = false;
     List<String> bookmarks = [];
     List<String> passedQuizzes = [];
-    List<String> unlockedTopicsNursing = [];
-    List<String> unlockedTopicsMidwifery = [];
     String lastActive = "0";
     String email = "";
 
@@ -86,16 +82,12 @@ class UserViewModel extends ChangeNotifier {
       await prefs.setBool('isPremium', isPremium);
       await prefs.setStringList('bookmarks', bookmarks);
       await prefs.setStringList('passedQuizzes', passedQuizzes);
-      await prefs.setStringList('unlockedTopicsNursing', unlockedTopicsNursing);
-      await prefs.setStringList('unlockedTopicsMidwifery', unlockedTopicsMidwifery);
       await prefs.setString('lastActive', lastActive);
       await prefs.setString('email', email);
     } else {
       isPremium = prefs.getBool('isPremium') ?? false;
       bookmarks = prefs.getStringList('bookmarks') ?? [];
       passedQuizzes = prefs.getStringList('passedQuizzes') ?? [];
-      unlockedTopicsNursing = prefs.getStringList('unlockedTopicsNursing') ?? [];
-      unlockedTopicsMidwifery = prefs.getStringList('unlockedTopicsMidwifery') ?? [];
       lastActive = prefs.getString('lastActive') ?? "";
       email = prefs.getString('email') ?? "";
     }
@@ -105,8 +97,6 @@ class UserViewModel extends ChangeNotifier {
       'isPremium': isPremium,
       'bookmarks': bookmarks,
       'passedQuizzes': passedQuizzes,
-      'unlockedTopicsNursing': unlockedTopicsNursing,
-      'unlockedTopicsMidwifery': unlockedTopicsMidwifery,
       'email': email,
       'createdAt': '',
       'lastActive': lastActive,
@@ -120,8 +110,6 @@ class UserViewModel extends ChangeNotifier {
     await prefs.setBool('isPremium', _currentUser.isPremium);
     await prefs.setStringList('bookmarks', _currentUser.bookmarks);
     await prefs.setStringList('passedQuizzes', _currentUser.passedQuizzes);
-    await prefs.setStringList('unlockedTopicsNursing', _currentUser.unlockedTopicsNursing);
-    await prefs.setStringList('unlockedTopicsMidwifery', _currentUser.unlockedTopicsMidwifery);
     await prefs.setString('lastActive', _currentUser.lastActive!);
   }
 
@@ -168,12 +156,6 @@ class UserViewModel extends ChangeNotifier {
           break;
         case 'passedQuizzes':
           await prefs.setStringList('passedQuizzes', value);
-          break;
-        case 'unlockedTopicsNursing':
-          await prefs.setStringList('unlockedTopicsNursing', value);
-          break;
-        case 'unlockedTopicsMidwifery':
-          await prefs.setStringList('unlockedTopicsMidwifery', value);
           break;
         case 'lastActive':
           await prefs.setString('lastActive', value);

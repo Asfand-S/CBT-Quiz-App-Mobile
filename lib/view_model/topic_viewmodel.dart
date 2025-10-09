@@ -28,22 +28,14 @@ class TopicViewModel extends ChangeNotifier {
 
       // Map sets to (bool, Set) pairs
       final List<(bool, Topic)> result = [];
+      int i = 0;
       for (var topic1 in topics) {
-        bool isLocked = true;
+        i += 1;
+        bool isLocked = false;
 
         // If user is premium, unlock all sets
-        if (currentUser.isPremium) { 
-          isLocked = false; 
-        }
-        else {
-          // If user has not unlocked 2 subjects yet, then unlock all topics so that he may choose 2 of them
-          if (categoryId.toLowerCase() == "nursing" && currentUser.unlockedTopicsNursing.length < 2) { isLocked = false; }
-          if (categoryId.toLowerCase() == "midwifery" && currentUser.unlockedTopicsMidwifery.length < 2) { isLocked = false; }
-
-          // If user has unlocked 2 subjects, then only allow him access to those 2 subjects
-          if (currentUser.unlockedTopicsMidwifery.contains(topic1.id) || currentUser.unlockedTopicsNursing.contains(topic1.id)) {
-            isLocked = false;
-          }
+        if (!currentUser.isPremium && i > 2) {
+          isLocked = true;
         }
 
         result.add((isLocked, topic1));

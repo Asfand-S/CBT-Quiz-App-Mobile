@@ -65,8 +65,14 @@ class SetsScreen extends StatelessWidget {
                   onTap: isLocked
                       ? () {
                           if (!setVM.currentUser.isPremium) {
-                            Dialogs.snackBar(
-                                context, 'Locked – Get premium to Access.');
+                            if (setVM.currentUser.passedQuizzes.length == 0) {
+                              Dialogs.snackBar(
+                                  context, 'This set is locked till you complete the previous set with 60% or higher score.');
+                            }
+                            else {
+                              Dialogs.snackBar(
+                                  context, 'Locked – Get premium to Access.');
+                            }
                           } else {
                             Dialogs.snackBar(context,
                                 'This set is locked till you complete the previous set with 60% or higher score.');

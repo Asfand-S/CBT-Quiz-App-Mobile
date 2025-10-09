@@ -4,8 +4,6 @@ class CustomUserModel {
   bool isPremium;
   List<String> bookmarks;
   List<String> passedQuizzes;
-  List<String> unlockedTopicsNursing;
-  List<String> unlockedTopicsMidwifery;
   final String? createdAt;
   String? lastActive;
 
@@ -15,8 +13,6 @@ class CustomUserModel {
     required this.isPremium,
     required this.bookmarks,
     required this.passedQuizzes,
-    required this.unlockedTopicsNursing,
-    required this.unlockedTopicsMidwifery,
     required this.createdAt,
     required this.lastActive,
   });
@@ -29,8 +25,6 @@ class CustomUserModel {
       isPremium: json['isPremium'] as bool,
       bookmarks: List<String>.from(json['bookmarks'] ?? []),
       passedQuizzes: List<String>.from(json['passedQuizzes'] ?? []),
-      unlockedTopicsNursing: List<String>.from(json['unlockedTopicsNursing'] ?? []),
-      unlockedTopicsMidwifery: List<String>.from(json['unlockedTopicsMidwifery'] ?? []),
       createdAt: json['createdAt'] as String?,
       lastActive: json['lastActive'] as String?,
     );
@@ -44,8 +38,6 @@ class CustomUserModel {
       'isPremium': isPremium,
       'bookmarks': bookmarks,
       'passedQuizzes': passedQuizzes,
-      'unlockedTopicsNursing': unlockedTopicsNursing,
-      'unlockedTopicsMidwifery': unlockedTopicsMidwifery,
       'createdAt': createdAt,
       'lastActive': lastActive,
     };
@@ -62,12 +54,6 @@ class CustomUserModel {
         break;
       case 'passedQuizzes':
         passedQuizzes = value;
-        break;
-      case 'unlockedTopicsNursing':
-        unlockedTopicsNursing = value;
-        break;
-      case 'unlockedTopicsMidwifery':
-        unlockedTopicsMidwifery = value;
         break;
       case 'lastActive':
         lastActive = value;

@@ -49,23 +49,6 @@ class PracticeTopicsScreen extends StatelessWidget {
                             'Locked – Upgrade to Access.');
                         }
                   : () {
-                        if (!topicVM.currentUser.isPremium) {
-                          if (categoryId.toLowerCase() == "nursing") { 
-                            List<String> topicsIdList = topicVM.currentUser.unlockedTopicsNursing;
-                            if (!topicsIdList.contains(topic.id)) {
-                              topicsIdList.add(topic.id);
-                              userVM.updateUserData('unlockedTopicsNursing', topicsIdList);
-                            }
-                          }
-                          if (categoryId.toLowerCase() == "midwifery") { 
-                            List<String> topicsIdList = topicVM.currentUser.unlockedTopicsMidwifery;
-                            if (!topicsIdList.contains(topic.id)) {
-                              topicsIdList.add(topic.id);
-                              userVM.updateUserData('unlockedTopicsMidwifery', topicsIdList);
-                            }
-                          }
-                        }
-                    
                         // Navigate to quiz for this topic
                         NavigationService.navigateTo(
                           '/sets',

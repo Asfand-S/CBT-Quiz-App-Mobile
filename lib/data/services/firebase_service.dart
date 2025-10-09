@@ -184,8 +184,6 @@ class FirebaseService {
         'isPremium': false,
         'bookmarks': [],
         'passedQuizzes': [],
-        'unlockedTopicsNursing': [],
-        'unlockedTopicsMidwifery': [],
         'email': '',
         'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
         'lastActive': DateTime.now().millisecondsSinceEpoch.toString(),
