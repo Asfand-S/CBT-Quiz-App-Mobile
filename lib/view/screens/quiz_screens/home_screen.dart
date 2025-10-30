@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 This group is for educational purposes only and is not a substitute for professional medical advice.
 
-Participation is optional and will not affect your access to the app.'''),
+Participation is optional and will not affect your access to the app.'''),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -70,6 +70,65 @@ Participation is optional and will not affect your access to the app.'''),
             const SnackBar(content: Text('Could not open WhatsApp Channel')),
           );
         }
+      }
+    }
+
+    // Add this function for the Rate Us feature
+    Future<void> _openPlayStoreForRating() async {
+      // Replace 'com.example.cbt_quiz_android' with your app's actual package name
+      final Uri playStoreUrl = Uri.parse(
+          'market://details?id=com.example.cbt_quiz_android&showAllReviews=true');
+      final Uri webPlayStoreUrl = Uri.parse(
+          'https://play.google.com/store/apps/details?id=com.cbt.quizapp&reviewId=0');
+
+      try {
+        // Try launching the Play Store app
+        if (await canLaunchUrl(playStoreUrl)) {
+          await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+        } else {
+          // Fallback to the web version
+          if (await canLaunchUrl(webPlayStoreUrl)) {
+            await launchUrl(webPlayStoreUrl,
+                mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not open Play Store')),
+            );
+          }
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+
+    Future<void> _openPlayStoreForSharing() async {
+      // Replace 'com.example.cbt_quiz_android' with your app's actual package name
+      final Uri playStoreUrl = Uri.parse(
+          'market://details?id=com.example.cbt_quiz_android&showAllReviews=true');
+      final Uri webPlayStoreUrl = Uri.parse(
+          'https://play.google.com/store/apps/details?id=com.cbt.quizapp');
+
+      try {
+        // Try launching the Play Store app
+        if (await canLaunchUrl(playStoreUrl)) {
+          await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+        } else {
+          // Fallback to the web version
+          if (await canLaunchUrl(webPlayStoreUrl)) {
+            await launchUrl(webPlayStoreUrl,
+                mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not open Play Store')),
+            );
+          }
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
       }
     }
 
@@ -483,13 +542,10 @@ Participation is optional and will not affect your access to the app.'''),
                 });
                 switch (index) {
                   case 0:
-                    // NavigationService.navigateTo('/aboutus');
+                    _openPlayStoreForSharing();
                     break;
                   case 1:
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Rate Us feature coming soon!')),
-                    );
+                    _openPlayStoreForRating(); // Call the rate us function
                     break;
                   case 2:
                     openWhatsAppWithConfirmation(context);

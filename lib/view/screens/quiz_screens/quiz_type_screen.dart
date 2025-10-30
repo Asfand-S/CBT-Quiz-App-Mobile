@@ -251,15 +251,16 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                         builder: (context) => AlertDialog(
                           title: const Text('Warning'),
                           content: const Text(
-                            '''This account is being used on multiple devices. Be careful: progress and bookmarks may not sync, and premium access could be affected.
+                            '''Warning ⚠
 
+Multiple devices detected! 
+🚫 Your progress, bookmarks, and premium access may be lost. 
 
+This account is restricted to single-device use.
 
-User should lose progress and bookmarks.
+ Please use on one device to avoid issues.
 
-This should discourage account sharing.
-
-https://docs.google.com/document/d/1MKS0t4KxpIk_1BiTj-VeB9gWVJw3bq9cpvWmwXk8KOI/view?pli=1&tab=t.0#heading=h.27rfpkiyipl7''',
+Read our terms and conditions for more.''',
                           ),
                           actions: [
                             TextButton(
@@ -270,8 +271,34 @@ https://docs.google.com/document/d/1MKS0t4KxpIk_1BiTj-VeB9gWVJw3bq9cpvWmwXk8KOI/
                         ),
                       );
                     } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Get premium'),
+                          content: const Text(
+                            '''Unlock your full potential with a secure one-time purchase via Google Play and immediately gain:
+
+✅Comprehensive Question Bank: Access all questions across every category.
+✅Unlimited Bookmarks: Streamline your revisions by saving unlimited crucial content.
+✅Dedicated Offline Mode: Study seamlessly anytime, anywhere.
+
+ No recurring subscriptions – ever.''',
+                          ),
+                          actions: [
+                            TextButton(
+                              child: const Text('cancel'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('continue'),
+                              onPressed: () {
+                                loginWithGoogleAndSaveToFirestore();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                       // Directly go to payment flow
-                      loginWithGoogleAndSaveToFirestore();
                     }
                   },
                   style: ElevatedButton.styleFrom(

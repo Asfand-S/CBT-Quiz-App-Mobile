@@ -45,10 +45,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
       if (purchase.status == PurchaseStatus.purchased) {
         await userVM.updateUserData('isPremium', true);
         _iap.completePurchase(purchase);
-      } 
-      else if (purchase.status == PurchaseStatus.error) {
+      } else if (purchase.status == PurchaseStatus.error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content:
+          SnackBar(
+              content:
                   Text("Purchase failed: ${purchase.error?.message ?? ''}")),
         );
       }
@@ -65,9 +65,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
           const SnackBar(content: Text("Purchase failed")),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Purchase Succeed"))
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Purchase Succeed")));
         userVM.updateUserData('isPremium', true);
       }
     }
@@ -79,11 +78,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
       appBar: AppBar(title: Text("Premium Upgrade")),
       body: Center(
         child: _product != null
-                ? ElevatedButton(
-                    onPressed: _buyProduct,
-                    child: Text("Unlock Premium • ${_product!.price}"),
-                  )
-                : const CircularProgressIndicator(),
+            ? ElevatedButton(
+                onPressed: _buyProduct,
+                child: Text("Unlock Premium • ${_product!.price}"),
+              )
+            : const CircularProgressIndicator(),
       ),
     );
   }

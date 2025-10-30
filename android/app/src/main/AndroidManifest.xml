@@ -3,7 +3,7 @@
 
     <application
     
-        android:label="cbt_quiz_android"
+        android:label="Nursing CBT NG"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
