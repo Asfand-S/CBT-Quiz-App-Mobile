@@ -278,14 +278,103 @@ class HiveService {
     }
   }
 
+  // Future<List<Topic>> getTopics(String categoryId) async {
+  //   final box = await Hive.openBox<Map>(_boxName);
+  //   final categoryMap = box.get(categoryId.toLowerCase());
+  //   if (categoryMap == null || categoryMap['topics'] == null) return [];
+
+  //   final topicsMap = categoryMap['topics'] as Map;
+  //   return topicsMap.values.map((e) => e['topic'] as Topic).toList();
+  // }
   Future<List<Topic>> getTopics(String categoryId) async {
     final box = await Hive.openBox<Map>(_boxName);
     final categoryMap = box.get(categoryId.toLowerCase());
     if (categoryMap == null || categoryMap['topics'] == null) return [];
 
     final topicsMap = categoryMap['topics'] as Map;
-    return topicsMap.values.map((e) => e['topic'] as Topic).toList();
+
+    // Convert map values to a list of Topic + createdAt
+    final topicsList = topicsMap.values.map((e) {
+      final topicData = e['topic'];
+      final createdAt = e['createdAt'];
+      return {
+        'topic': topicData,
+        'createdAt': createdAt,
+      };
+    }).toList();
+
+    // Sort the list by createdAt (same as Firestore orderBy)
+    topicsList.sort((a, b) {
+      final aTime = a['createdAt'] is Timestamp
+          ? (a['createdAt'] as Timestamp).toDate()
+          : DateTime.tryParse(a['createdAt'].toString()) ?? DateTime(0);
+      final bTime = b['createdAt'] is Timestamp
+          ? (b['createdAt'] as Timestamp).toDate()
+          : DateTime.tryParse(b['createdAt'].toString()) ?? DateTime(0);
+      return aTime.compareTo(bTime);
+    });
+
+    // Return only the Topic objects
+    return topicsList.map((e) => e['topic'] as Topic).toList();
   }
+
+  // Future<List<Set>> getSets(
+  //     String categoryId, String topicId, List<String> passedQuizzes) async {
+  //   final box = await Hive.openBox<Map>(_boxName);
+  //   final categoryMap = box.get(categoryId.toLowerCase());
+  //   if (categoryMap == null) return [];
+
+  //   if (topicId.isEmpty) {
+  //     // Return mock sets
+  //     final mockSetsMap = categoryMap['mock_sets'] as Map?;
+  //     if (mockSetsMap == null) return [];
+
+  //     List<Set> setsOpened = [];
+  //     // BEFORE
+  //     // for (final entry in mockSetsMap.entries) {
+  //     //   final setId = entry.key.toString();
+  //     //   if (passedQuizzes.contains(setId)) {
+  //     //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     //   } else {
+  //     //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     //     break;
+  //     //   }
+  //     // }
+
+  //     // AFTER
+  //     for (final entry in mockSetsMap.entries) {
+  //       final setId = entry.key.toString();
+  //       setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     }
+  //     return setsOpened;
+  //   } else {
+  //     final topicsMap = categoryMap['topics'] as Map?;
+  //     final topicMap = topicsMap?[topicId];
+  //     if (topicMap == null) return [];
+
+  //     final setsMap = topicMap['sets'] as Map?;
+  //     if (setsMap == null) return [];
+
+  //     List<Set> setsOpened = [];
+  //     // BEFORE - Return only opened sets
+  //     // for (final entry in setsMap.entries) {
+  //     //   final setId = entry.key.toString();
+  //     //   if (passedQuizzes.contains(setId)) {
+  //     //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     //   } else {
+  //     //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     //     break;
+  //     //   }
+  //     // }
+
+  //     // AFTER - Return all sets
+  //     for (final entry in setsMap.entries) {
+  //       final setId = entry.key.toString();
+  //       setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
+  //     }
+  //     return setsOpened;
+  //   }
+  // }
 
   Future<List<Set>> getSets(
       String categoryId, String topicId, List<String> passedQuizzes) async {
@@ -293,30 +382,25 @@ class HiveService {
     final categoryMap = box.get(categoryId.toLowerCase());
     if (categoryMap == null) return [];
 
+    List<Map<String, dynamic>> setsList = [];
+
     if (topicId.isEmpty) {
-      // Return mock sets
+      // MOCK SETS
       final mockSetsMap = categoryMap['mock_sets'] as Map?;
       if (mockSetsMap == null) return [];
 
-      List<Set> setsOpened = [];
-      // BEFORE
-      // for (final entry in mockSetsMap.entries) {
-      //   final setId = entry.key.toString();
-      //   if (passedQuizzes.contains(setId)) {
-      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      //   } else {
-      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      //     break;
-      //   }
-      // }
-
-      // AFTER
-      for (final entry in mockSetsMap.entries) {
+      // Convert map values to list with createdAt
+      setsList = mockSetsMap.entries.map((entry) {
         final setId = entry.key.toString();
-        setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      }
-      return setsOpened;
+        final data = entry.value as Map;
+        return {
+          'id': setId,
+          'data': data,
+          'createdAt': data['createdAt'],
+        };
+      }).toList();
     } else {
+      // TOPIC SETS
       final topicsMap = categoryMap['topics'] as Map?;
       final topicMap = topicsMap?[topicId];
       if (topicMap == null) return [];
@@ -324,25 +408,33 @@ class HiveService {
       final setsMap = topicMap['sets'] as Map?;
       if (setsMap == null) return [];
 
-      List<Set> setsOpened = [];
-      // BEFORE - Return only opened sets
-      // for (final entry in setsMap.entries) {
-      //   final setId = entry.key.toString();
-      //   if (passedQuizzes.contains(setId)) {
-      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      //   } else {
-      //     setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      //     break;
-      //   }
-      // }
-
-      // AFTER - Return all sets
-      for (final entry in setsMap.entries) {
+      setsList = setsMap.entries.map((entry) {
         final setId = entry.key.toString();
-        setsOpened.add(Set.fromMap(setId, {"name": entry.value["setName"]}));
-      }
-      return setsOpened;
+        final data = entry.value as Map;
+        return {
+          'id': setId,
+          'data': data,
+          'createdAt': data['createdAt'],
+        };
+      }).toList();
     }
+
+    // 🔽 Sort the list by createdAt (ascending like Firestore)
+    setsList.sort((a, b) {
+      final aTime = a['createdAt'] is Timestamp
+          ? (a['createdAt'] as Timestamp).toDate()
+          : DateTime.tryParse(a['createdAt'].toString()) ?? DateTime(0);
+      final bTime = b['createdAt'] is Timestamp
+          ? (b['createdAt'] as Timestamp).toDate()
+          : DateTime.tryParse(b['createdAt'].toString()) ?? DateTime(0);
+      return aTime.compareTo(bTime);
+    });
+
+    // Convert back to List<Set>
+    final setsOpened =
+        setsList.map((e) => Set.fromMap(e['id'], e['data'])).toList();
+
+    return setsOpened;
   }
 
   Future<List<Question>> getQuestions(

@@ -76,8 +76,7 @@ Participation is optional and will not affect your access to the app.'''),
     // Add this function for the Rate Us feature
     Future<void> _openPlayStoreForRating() async {
       // Replace 'com.example.cbt_quiz_android' with your app's actual package name
-      final Uri playStoreUrl = Uri.parse(
-          'market://details?id=com.example.cbt_quiz_android&showAllReviews=true');
+      final Uri playStoreUrl = Uri.parse('market://details?id=com.cbt.quizapp');
       final Uri webPlayStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=com.cbt.quizapp&reviewId=0');
 
@@ -105,8 +104,7 @@ Participation is optional and will not affect your access to the app.'''),
 
     Future<void> _openPlayStoreForSharing() async {
       // Replace 'com.example.cbt_quiz_android' with your app's actual package name
-      final Uri playStoreUrl = Uri.parse(
-          'market://details?id=com.example.cbt_quiz_android&showAllReviews=true');
+      final Uri playStoreUrl = Uri.parse('market://details?id=com.cbt.quizapp');
       final Uri webPlayStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=com.cbt.quizapp');
 

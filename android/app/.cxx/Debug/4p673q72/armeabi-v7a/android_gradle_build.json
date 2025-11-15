@@ -4,14 +4,14 @@
   ],
   "cleanCommandsComponents": [
     [
-      "C:\\Users\\MaisamSmitE\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "D:\\SmitE\\androidsdk\\cmake\\3.22.1\\bin\\ninja.exe",
       "-C",
       "D:\\SmitE\\firstapp\\CBT-Quiz-App-Mobile\\android\\app\\.cxx\\Debug\\4p673q72\\armeabi-v7a",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
-    "C:\\Users\\MaisamSmitE\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "D:\\SmitE\\androidsdk\\cmake\\3.22.1\\bin\\ninja.exe",
     "-C",
     "D:\\SmitE\\firstapp\\CBT-Quiz-App-Mobile\\android\\app\\.cxx\\Debug\\4p673q72\\armeabi-v7a",
     "{LIST_OF_TARGETS_TO_BUILD}"
@@ -19,8 +19,8 @@
   "libraries": {},
   "toolchains": {
     "toolchain": {
-      "cCompilerExecutable": "C:\\Users\\MaisamSmitE\\AppData\\Local\\Android\\Sdk\\ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
-      "cppCompilerExecutable": "C:\\Users\\MaisamSmitE\\AppData\\Local\\Android\\Sdk\\ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+      "cCompilerExecutable": "D:\\SmitE\\androidsdk\\ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "D:\\SmitE\\androidsdk\\ndk\\27.2.12479018\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
     }
   },
   "cFileExtensions": [],
