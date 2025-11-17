@@ -20,7 +20,8 @@ class QuestionViewModel extends ChangeNotifier {
     List<Question> questions = [];
     try {
       if (currentUser.isPremium) {
-        questions = await _hiveService.getQuestions(categoryId, topicId, setId);
+        // questions = await _hiveService.getQuestions(categoryId, topicId, setId); // Use hive services when trying for offline storage
+        questions = await _firebaseService.getQuestions(categoryId, topicId, setId); // Using temporarily, main is hive services
       }
       else {
         questions = await _firebaseService.getQuestions(categoryId, topicId, setId);

@@ -16,35 +16,14 @@ class SetViewModel extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
   final HiveService _hiveService = HiveService();
 
-  // BEFORE
-  Future<List<Set>> fetchSets1(String categoryId, String topicId) async {
-    List<Set> sets = [];
-    try {
-      if (currentUser.isPremium) {
-        sets = await _hiveService.getSets(
-            categoryId, topicId, currentUser.passedQuizzes);
-      } else {
-        sets = await _firebaseService.getSets(
-            categoryId, topicId, currentUser.passedQuizzes);
-        if (sets.length > 2) sets = sets.sublist(0, 2);
-      }
-      return sets;
-    } catch (e) {
-      print("Error fetching sets: $e");
-      return []; // Return empty list on failure
-    }
-  }
-
-  // AFTER
   Future<List<(bool, Set)>> fetchSets(String categoryId, String topicId) async {
     List<Set> sets = [];
     try {
       if (currentUser.isPremium) {
-        sets = await _hiveService.getSets(
-            categoryId, topicId, currentUser.passedQuizzes);
+        // sets = await _hiveService.getSets(categoryId, topicId, currentUser.passedQuizzes); // Use hive services when trying for offline storage
+        sets = await _firebaseService.getSets(categoryId, topicId, currentUser.passedQuizzes); // Using temporarily, main is hive services
       } else {
-        sets = await _firebaseService.getSets(
-            categoryId, topicId, currentUser.passedQuizzes);
+        sets = await _firebaseService.getSets(categoryId, topicId, currentUser.passedQuizzes);
       }
 
       // Map sets to (bool, Set) pairs

@@ -20,7 +20,8 @@ class TopicViewModel extends ChangeNotifier {
     try {
       List<Topic> topics = [];
       if (currentUser.isPremium) {
-        topics = await _hiveService.getTopics(categoryId);
+        // topics = await _hiveService.getTopics(categoryId); // Use hive services when trying for offline storage
+        topics = await _firebaseService.getTopics(categoryId); // Using temporarily, main is hive services
       }
       else {
         topics = await _firebaseService.getTopics(categoryId);
