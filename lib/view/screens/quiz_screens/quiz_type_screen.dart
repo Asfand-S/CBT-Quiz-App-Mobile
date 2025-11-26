@@ -249,23 +249,25 @@ class _QuizTypeScreenState extends State<QuizTypeScreen> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Warning'),
+                          title: const Text('Get premium'),
                           content: const Text(
-                            '''Warning ⚠
+                            '''Unlock your full potential with a secure one-time purchase via Google Play and immediately gain:
 
-Multiple devices detected! 
-🚫 Your progress, bookmarks, and premium access may be lost. 
+✅Comprehensive Question Bank: Access all questions across every category.
+✅Unlimited Bookmarks: Streamline your revisions by saving unlimited crucial content.
 
-This account is restricted to single-device use.
-
- Please use on one device to avoid issues.
-
-Read our terms and conditions for more.''',
+ No recurring subscriptions – ever.''',
                           ),
                           actions: [
                             TextButton(
-                              child: const Text('OK'),
+                              child: const Text('cancel'),
                               onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('continue'),
+                              onPressed: () {
+                                loginWithGoogleAndSaveToFirestore();
+                              },
                             ),
                           ],
                         ),
@@ -280,7 +282,6 @@ Read our terms and conditions for more.''',
 
 ✅Comprehensive Question Bank: Access all questions across every category.
 ✅Unlimited Bookmarks: Streamline your revisions by saving unlimited crucial content.
-✅Dedicated Offline Mode: Study seamlessly anytime, anywhere.
 
  No recurring subscriptions – ever.''',
                           ),

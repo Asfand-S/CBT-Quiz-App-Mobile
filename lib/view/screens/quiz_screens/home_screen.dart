@@ -1,6 +1,7 @@
 import 'package:cbt_quiz_android/data/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/navigation_service.dart';
@@ -102,31 +103,26 @@ Participation is optional and will not affect your access to the app.'''),
       }
     }
 
-    Future<void> _openPlayStoreForSharing() async {
-      // Replace 'com.example.cbt_quiz_android' with your app's actual package name
-      final Uri playStoreUrl = Uri.parse('market://details?id=com.cbt.quizapp');
-      final Uri webPlayStoreUrl = Uri.parse(
-          'https://play.google.com/store/apps/details?id=com.cbt.quizapp');
+    Future<void> _shareAppLink() async {
+      const appLink =
+          'https://play.google.com/store/apps/details?id=com.cbt.quizapp';
 
       try {
-        // Try launching the Play Store app
-        if (await canLaunchUrl(playStoreUrl)) {
-          await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
-        } else {
-          // Fallback to the web version
-          if (await canLaunchUrl(webPlayStoreUrl)) {
-            await launchUrl(webPlayStoreUrl,
-                mode: LaunchMode.externalApplication);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not open Play Store')),
-            );
-          }
+        // Copy to clipboard
+        await Clipboard.setData(const ClipboardData(text: appLink));
+
+        // Show SnackBar confirmation
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('App link copied to clipboard!')),
+          );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to copy: $e')),
+          );
+        }
       }
     }
 
@@ -540,7 +536,7 @@ Participation is optional and will not affect your access to the app.'''),
                 });
                 switch (index) {
                   case 0:
-                    _openPlayStoreForSharing();
+                    _shareAppLink();
                     break;
                   case 1:
                     _openPlayStoreForRating(); // Call the rate us function
