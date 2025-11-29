@@ -97,239 +97,79 @@ class FirebaseService {
     }
   }
 
-  Future<List<Question>> getBookmarkedQuestions1(
-    String categoryId,
-    List<String> bookmarks,
-  ) async {
-    final List<Question> bookmarkedQuestions = [];
-
-    final categoryRef =
-        _db.collection('categories').doc(categoryId.toLowerCase());
-
-    // Step 1: Get all topics
-    final topicsSnapshot = await categoryRef.collection('topics').get();
-
-    for (final topicDoc in topicsSnapshot.docs) {
-      final topicId = topicDoc.id;
-
-      // Step 2: Get all sets in this topic
-      final setsSnapshot = await categoryRef
-          .collection('topics')
-          .doc(topicId)
-          .collection('sets')
-          .get();
-
-      for (final setDoc in setsSnapshot.docs) {
-        final setId = setDoc.id;
-
-        // Step 3: Get all questions in this set
-        final questionsSnapshot = await categoryRef
-            .collection('topics')
-            .doc(topicId)
-            .collection('sets')
-            .doc(setId)
-            .collection('questions')
-            .get();
-
-        for (final questionDoc in questionsSnapshot.docs) {
-          final questionData = questionDoc.data();
-          final questionId = questionDoc.id;
-
-          if (bookmarks.contains(questionId)) {
-            bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
-          }
-        }
-      }
+  // BOOKMARK FUNCTIONS WITH NEW LOGIC
+  Future<void> addBookmark(String userId, Question question, String categoryId) async {
+    String col_name = "nursing_bookmarks";
+    if (categoryId == "Nursing") {
+      col_name = "nursing_bookmarks";
+    }
+    else {
+      col_name = "midwifery_bookmarks";
     }
 
-    // Step 1: Get all mock sets
-    final mockSetsSnapshot = await categoryRef.collection('mock_sets').get();
-
-    for (final setDoc in mockSetsSnapshot.docs) {
-      final setId = setDoc.id;
-
-      // Step 3: Get all questions in this set
-      final questionsSnapshot = await categoryRef
-          .collection('mock_sets')
-          .doc(setId)
-          .collection('questions')
-          .get();
-
-      for (final questionDoc in questionsSnapshot.docs) {
-        final questionData = questionDoc.data();
-        final questionId = questionDoc.id;
-
-        if (bookmarks.contains(questionId)) {
-          bookmarkedQuestions.add(Question.fromMap(questionId, questionData));
-        }
-      }
-    }
-
-    return bookmarkedQuestions;
+    await _db
+        .collection('users')
+        .doc(userId)
+        .collection(col_name)
+        .doc(question.id)
+        .set(question.toMap());
   }
 
-  Future<List<Question>> getBookmarkedQuestions2(
-    String categoryId,
-    List<String> bookmarks,
-  ) async {
-    if (bookmarks.isEmpty) return [];
-
-    const batchSize = 10;
-    final List<Question> bookmarkedQuestions = [];
-    final categoryPath = 'categories/${categoryId.toLowerCase()}';
-
-    for (var i = 0; i < bookmarks.length; i += batchSize) {
-      final batch = bookmarks.sublist(
-        i,
-        i + batchSize > bookmarks.length ? bookmarks.length : i + batchSize,
-      );
-
-      // Single query across all "questions" subcollections
-      final querySnapshot = await FirebaseFirestore.instance
-          .collectionGroup('questions')
-          .where(FieldPath.documentId, whereIn: batch)
-          .get();
-
-      for (final doc in querySnapshot.docs) {
-        // Filter only documents belonging to this category
-        if (doc.reference.path.startsWith(categoryPath)) {
-          bookmarkedQuestions.add(Question.fromMap(doc.id, doc.data()));
-        }
-      }
+  Future<void> removeBookmark(String userId, String questionId, String categoryId) async {
+    String col_name = "nursing_bookmarks";
+    if (categoryId == "Nursing") {
+      col_name = "nursing_bookmarks";
+    }
+    else {
+      col_name = "midwifery_bookmarks";
     }
 
-    return bookmarkedQuestions;
+    await _db
+        .collection('users')
+        .doc(userId)
+        .collection(col_name)
+        .doc(questionId)
+        .delete();
   }
 
-  Future<List<Question>> getBookmarkedQuestions3(
-    String categoryId,
-    List<String> bookmarkIds,
-  ) async {
-    final firestore = FirebaseFirestore.instance;
-    final List<Question> bookmarkedQuestions = [];
-    final categoryRef =
-        firestore.collection('categories').doc(categoryId.toLowerCase());
-
-    // Helper to chunk bookmarkIds (Firestore allows max 10 in whereIn)
-    Iterable<List<T>> chunk<T>(List<T> list, int size) sync* {
-      for (var i = 0; i < list.length; i += size) {
-        yield list.sublist(i, i + size > list.length ? list.length : i + size);
-      }
+  Future<List<Question>> getBookmarkedQuestions(String userId, String categoryId) async {
+    String col_name = "nursing_bookmarks";
+    if (categoryId == "Nursing") {
+      col_name = "nursing_bookmarks";
     }
-
-    // --- 1️⃣ Search inside mock_sets/{mockSetId}/questions/{questionId} ---
-    final mockSetsSnapshot = await categoryRef.collection('mock_sets').get();
-    for (final mockSetDoc in mockSetsSnapshot.docs) {
-      final questionsRef = mockSetDoc.reference.collection('questions');
-
-      for (final batch in chunk(bookmarkIds, 10)) {
-        final snapshot = await questionsRef
-            .where(FieldPath.documentId, whereIn: batch)
-            .get();
-
-        for (final doc in snapshot.docs) {
-          bookmarkedQuestions.add(Question.fromMap(doc.id, doc.data()));
-        }
-      }
+    else {
+      col_name = "midwifery_bookmarks";
     }
+    final snap = await _db
+        .collection('users')
+        .doc(userId)
+        .collection(col_name)
+        .get();
 
-    // --- 2️⃣ Search inside topics/{topicId}/sets/{setId}/questions/{questionId} ---
-    final topicsSnapshot = await categoryRef.collection('topics').get();
-    for (final topicDoc in topicsSnapshot.docs) {
-      final setsSnapshot = await topicDoc.reference.collection('sets').get();
-
-      for (final setDoc in setsSnapshot.docs) {
-        final questionsRef = setDoc.reference.collection('questions');
-
-        for (final batch in chunk(bookmarkIds, 10)) {
-          final snapshot = await questionsRef
-              .where(FieldPath.documentId, whereIn: batch)
-              .get();
-
-          for (final doc in snapshot.docs) {
-            bookmarkedQuestions.add(Question.fromMap(doc.id, doc.data()));
-          }
-        }
-      }
-    }
-
-    return bookmarkedQuestions;
+    return snap.docs
+        .map((doc) => Question.fromMap(doc.id, doc.data()))
+        .toList();
   }
 
-  Future<List<Question>> getBookmarkedQuestions(
-    String categoryId,
-    List<String> bookmarks,
-  ) async {
-    final List<Question> bookmarkedQuestions = [];
-    final categoryRef =
-        _db.collection('categories').doc(categoryId.toLowerCase());
-    final bool isPremium = false;
+  Future<int> getBookmarkCount(String userId) async {
+    final nursingCountSnap = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('nursing_bookmarks')
+        .count()
+        .get();
 
-    if (bookmarks.isEmpty) return [];
 
-    // 🔹 Split bookmarks into batches of 10 (max whereIn limit)
-    final batches = <List<String>>[];
-    for (var i = 0; i < bookmarks.length; i += 10) {
-      batches.add(bookmarks.sublist(
-          i, i + 10 > bookmarks.length ? bookmarks.length : i + 10));
-    }
+    final midwiferyCountSnap = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('midwifery_bookmarks')
+        .count()
+        .get();
 
-    // =============================
-    // 🔸 1. Handle Mock Sets
-    // =============================
-    Query<Map<String, dynamic>> mockSetsQuery =
-        categoryRef.collection('mock_sets').orderBy('createdAt');
-    if (!isPremium) mockSetsQuery = mockSetsQuery.limit(2);
-
-    final mockSetsSnapshot = await mockSetsQuery.get();
-
-    for (final setDoc in mockSetsSnapshot.docs) {
-      for (final batch in batches) {
-        final query = await setDoc.reference
-            .collection('questions')
-            .where(FieldPath.documentId, whereIn: batch)
-            .get();
-
-        bookmarkedQuestions.addAll(
-          query.docs.map((doc) => Question.fromMap(doc.id, doc.data())),
-        );
-      }
-    }
-
-    // =============================
-    // 🔸 2. Handle Topics and Sets
-    // =============================
-    Query<Map<String, dynamic>> topicQuery =
-        categoryRef.collection('topics').orderBy('createdAt');
-    if (!isPremium) topicQuery = topicQuery.limit(2);
-
-    final topicsSnapshot = await topicQuery.get();
-
-    for (final topicDoc in topicsSnapshot.docs) {
-      final topicRef = topicDoc.reference;
-
-      // Limit sets for free users
-      Query<Map<String, dynamic>> setsQuery =
-          topicRef.collection('sets').orderBy('createdAt');
-      if (!isPremium) setsQuery = setsQuery.limit(2);
-
-      final setsSnapshot = await setsQuery.get();
-
-      for (final setDoc in setsSnapshot.docs) {
-        for (final batch in batches) {
-          final query = await setDoc.reference
-              .collection('questions')
-              .where(FieldPath.documentId, whereIn: batch)
-              .get();
-
-          bookmarkedQuestions.addAll(
-            query.docs.map((doc) => Question.fromMap(doc.id, doc.data())),
-          );
-        }
-      }
-    }
-
-    return bookmarkedQuestions;
+    int totalCount = nursingCountSnap.count ?? 0;
+    totalCount += midwiferyCountSnap.count ?? 0;
+    return totalCount;
   }
 
   // New functions for Managing User Profile
@@ -346,7 +186,6 @@ class FirebaseService {
       CustomUserModel user = CustomUserModel.fromMap({
         'id': userId,
         'isPremium': false,
-        'bookmarks': [],
         'passedQuizzes': [],
         'email': '',
         'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),

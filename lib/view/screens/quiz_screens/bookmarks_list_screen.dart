@@ -52,9 +52,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
     if (result != true) return;
 
     final userVM = Provider.of<UserViewModel>(context, listen: false);
-    var bookmarks = userVM.currentUser.bookmarks;
-    bookmarks.remove(questionId);
-    userVM.updateUserData("bookmarks", bookmarks);
+    await userVM.removeBookmark(questionId, widget.categoryId);
     setState(() {});
   }
 
@@ -167,7 +165,10 @@ class _BookmarksPageState extends State<BookmarksPage> {
                   onTap:() async {
                     final result = await NavigationService.navigateTo(
                       '/question',
-                      arguments:  question,
+                      arguments: {
+                        'categoryId': widget.categoryId,
+                        'question': question
+                      },
                     );
       
                     if (result == true) {

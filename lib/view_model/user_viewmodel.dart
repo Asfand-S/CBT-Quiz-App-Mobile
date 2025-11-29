@@ -60,7 +60,6 @@ class UserViewModel extends ChangeNotifier {
     if (!prefs.containsKey('userId')) {
       await prefs.setString('userId', user.id);
       await prefs.setBool('isPremium', user.isPremium);
-      await prefs.setStringList('bookmarks', user.bookmarks);
       await prefs.setStringList('passedQuizzes', user.passedQuizzes);
       await prefs.setString('lastActive', user.lastActive!);
       await prefs.setString('email', user.email);
@@ -80,13 +79,11 @@ class UserViewModel extends ChangeNotifier {
     if (!prefs.containsKey('userId')) {
       await prefs.setString('userId', userId);
       await prefs.setBool('isPremium', isPremium);
-      await prefs.setStringList('bookmarks', bookmarks);
       await prefs.setStringList('passedQuizzes', passedQuizzes);
       await prefs.setString('lastActive', lastActive);
       await prefs.setString('email', email);
     } else {
       isPremium = prefs.getBool('isPremium') ?? false;
-      bookmarks = prefs.getStringList('bookmarks') ?? [];
       passedQuizzes = prefs.getStringList('passedQuizzes') ?? [];
       lastActive = prefs.getString('lastActive') ?? "";
       email = prefs.getString('email') ?? "";
@@ -108,7 +105,6 @@ class UserViewModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', _currentUser.id);
     await prefs.setBool('isPremium', _currentUser.isPremium);
-    await prefs.setStringList('bookmarks', _currentUser.bookmarks);
     await prefs.setStringList('passedQuizzes', _currentUser.passedQuizzes);
     await prefs.setString('lastActive', _currentUser.lastActive!);
   }
@@ -151,9 +147,6 @@ class UserViewModel extends ChangeNotifier {
           ensureLocalUserData();
           await prefs.setBool('isPremium', value);
           break;
-        case 'bookmarks':
-          await prefs.setStringList('bookmarks', value);
-          break;
         case 'passedQuizzes':
           await prefs.setStringList('passedQuizzes', value);
           break;
@@ -172,18 +165,20 @@ class UserViewModel extends ChangeNotifier {
 
 
 
-  Future<List<Question?>> getBookmarkedQuestions(String categoryId) async {
-    final bookmarks = currentUser.bookmarks;
+  Future<void> addBookmark(Question question, String categoryId) async {
+    await _firebaseService.addBookmark(_currentUser.id, question, categoryId);
+  }
 
-    if (bookmarks.isEmpty) {
-      return [];
-    }
-    else if (currentUser.isPremium) {
-      return await _hiveService.getBookmarkedQuestions(categoryId, bookmarks);
-    }
-    else {
-      return await _firebaseService.getBookmarkedQuestions(categoryId, bookmarks);
-    }
+  Future<void> removeBookmark(String questionId, String categoryId) async {
+    await _firebaseService.removeBookmark(_currentUser.id, questionId, categoryId);
+  }
+
+  Future<int> getBookmarkCount() async {
+    return await _firebaseService.getBookmarkCount(_currentUser.id);
+  }
+
+  Future<List<Question?>> getBookmarkedQuestions(String categoryId) async {
+    return await _firebaseService.getBookmarkedQuestions(_currentUser.id, categoryId);
   }
 
   Future<void> updatePassedQuizzes(String quizId, double percentage) async {

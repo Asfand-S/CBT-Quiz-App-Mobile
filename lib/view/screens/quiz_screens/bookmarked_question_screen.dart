@@ -6,8 +6,9 @@ import '../../../view_model/user_viewmodel.dart';
 
 class QuestionScreen extends StatelessWidget {
   final Question question;
+  final String categoryId;
 
-  const QuestionScreen({super.key, required this.question});
+  const QuestionScreen({super.key, required this.question, required this.categoryId});
 
   Future<void> _removeBookmark(BuildContext context, String questionId) async {
     // confirm before removing the bookmark
@@ -32,9 +33,7 @@ class QuestionScreen extends StatelessWidget {
     if (result != true) return;
 
     final userVM = Provider.of<UserViewModel>(context, listen: false);
-    var bookmarks = userVM.currentUser.bookmarks;
-    bookmarks.remove(questionId);
-    userVM.updateUserData("bookmarks", bookmarks);
+    userVM.removeBookmark(questionId, categoryId);
 
     Navigator.pop(context, true);
   }

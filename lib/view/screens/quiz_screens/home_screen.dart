@@ -61,8 +61,6 @@ Participation is optional and will not affect your access to the app.'''),
       if (confirmed == true) {
         final channelUrl =
             Uri.parse('https://whatsapp.com/channel/0029VbAvkqrDuMRlrq24EU2d');
-        final webUrl =
-            Uri.parse('https://chat.whatsapp.com/invite/your_invite_code');
 
         if (await canLaunchUrl(channelUrl)) {
           await launchUrl(channelUrl, mode: LaunchMode.externalApplication);

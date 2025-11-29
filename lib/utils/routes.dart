@@ -38,8 +38,13 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
       final args = settings.arguments as String;
       return MaterialPageRoute(builder: (_) => BookmarksPage(categoryId: args));
     case '/question':
-      final args = settings.arguments as Question;
-      return MaterialPageRoute(builder: (_) => QuestionScreen(question: args));
+      final args = settings.arguments as Map<String, dynamic>;
+      return MaterialPageRoute(
+        builder: (_) => QuestionScreen(
+          categoryId: args['categoryId'],
+          question: args['question'],
+        ),
+      );
     case '/quizType':
       final args = settings.arguments as String; // category
       return MaterialPageRoute(

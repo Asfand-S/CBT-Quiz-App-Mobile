@@ -2,7 +2,6 @@ class CustomUserModel {
   final String id;
   String email;
   bool isPremium;
-  List<String> bookmarks;
   List<String> passedQuizzes;
   final String? createdAt;
   String? lastActive;
@@ -11,46 +10,37 @@ class CustomUserModel {
     required this.id,
     required this.email,
     required this.isPremium,
-    required this.bookmarks,
     required this.passedQuizzes,
     required this.createdAt,
     required this.lastActive,
   });
 
-  // Factory method to create an instance from a JSON map
   factory CustomUserModel.fromMap(Map<String, dynamic> json) {
     return CustomUserModel(
       id: json['id'] as String,
       email: json['email'] as String,
       isPremium: json['isPremium'] as bool,
-      bookmarks: List<String>.from(json['bookmarks'] ?? []),
       passedQuizzes: List<String>.from(json['passedQuizzes'] ?? []),
       createdAt: json['createdAt'] as String?,
       lastActive: json['lastActive'] as String?,
     );
   }
 
-  // Method to convert an instance to JSON map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'email': email,
       'isPremium': isPremium,
-      'bookmarks': bookmarks,
       'passedQuizzes': passedQuizzes,
       'createdAt': createdAt,
       'lastActive': lastActive,
     };
   }
 
-  // Method to update 1 particular field
   void update(String field, dynamic value) {
     switch (field) {
       case 'isPremium':
         isPremium = value;
-        break;
-      case 'bookmarks':
-        bookmarks = value;
         break;
       case 'passedQuizzes':
         passedQuizzes = value;
@@ -65,5 +55,4 @@ class CustomUserModel {
         break;
     }
   }
-
 }

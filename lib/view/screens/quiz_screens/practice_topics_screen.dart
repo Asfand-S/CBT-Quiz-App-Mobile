@@ -5,7 +5,6 @@ import '../../../data/services/navigation_service.dart';
 import '../../../utils/dialog.dart';
 import '../../../utils/themes.dart';
 import '../../../view_model/topic_viewmodel.dart';
-import '../../../view_model/user_viewmodel.dart';
 
 class PracticeTopicsScreen extends StatelessWidget {
   final String categoryId;
@@ -15,7 +14,6 @@ class PracticeTopicsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topicVM = Provider.of<TopicViewModel>(context);
-    final userVM = Provider.of<UserViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
